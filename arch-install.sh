@@ -135,8 +135,8 @@ arch-chroot $MOUNT_POINT /usr/bin/mkinitcpio -p linux
 sed -i.bak '/sGRUB_CMDLINE_LINUX=""/GRUB_CMDLINE_LINUX="cryptdevice=/dev/sda1:cryptDevice"/g' $MOUNT_POINT/etc/default/grub
 echo "GRUB_ENABLE_CRYPTODISK=y" >> $MOUNT_POINT/etc/default/grub
 
-arch-chroot $MOUNT_POINT /usr/bin/grub-mkconfig -o /boot/grub/grub.cfg
-arch-chroot $MOUNT_POINT /usr/bin/grub-install $VOLUME
+arch-chroot $MOUNT_POINT grub-mkconfig -o /boot/grub/grub.cfg
+arch-chroot $MOUNT_POINT grub-install $VOLUME
 
 # Set the hostname
 echo WORKLINUX > $MOUNT_POINT/etc/hostname
