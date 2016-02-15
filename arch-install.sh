@@ -19,7 +19,7 @@ SWAP=$(($RAM+$TAIL))
 
 #applications list
 SYSTEM="base grub net-tools sudo"
-ACCESSORIES="mc curl gpm unzip jre8-openjdk java-openjfx"
+ACCESSORIES="mc curl rsync gpm unzip jre8-openjdk java-openjfx"
 GUI=""
 OFFICE=""
 DEVELOPMENT="base-devel gcc gdb cmake python clang jdk8-openjdk git subversion mercurial boost"
