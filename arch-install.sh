@@ -61,6 +61,10 @@ lvcreate -L --size 200M vg --name boot
 lvcreate -L --size "$SWAP"M vg --name swap
 lvcreate -l +100%FREE vg --name root
 
+mkfs.ext2 /dev/mapper/vg-boot
+mkfs.ext4 /dev/mapper/vg-root
+mkswap /dev/mapper/vg-swap
+
 swapon /dev/mapper/vg-swap
 mount /dev/mapper/vg-root $MOUNT_POINT
 mkdir $MOUNT_POINT/boot
