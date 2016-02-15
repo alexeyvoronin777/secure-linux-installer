@@ -27,23 +27,21 @@ WEB=""
 MEDIA=""
 EMULATORS="wine qemu"
 
-if [[ $GRAPHICAL == 1 ]]
-then
-ACCESSORIES=$ACCESSORIES "lilyterm"
-GUI=$GUI "xorg-server xorg-server-utils xorg-xinit mate mate-extra slim"
-DEVELOPMENT=$DEVELOPMENT "eclipse-cdt monodevelop qt5"
-OFFICE=$OFFICE "libreoffice"
-WEB=$WEB "firefox pidgin skype flashplayer transmission-cli transmission-gtk"
-MEDIA=$MEDIA "vlc ffmpeg mplayer gimp blender"
+if [[ $GRAPHICAL == 1 ]]; then
+ACCESSORIES="$ACCESSORIES lilyterm"
+GUI="$GUI xorg-server xorg-server-utils xorg-xinit mate mate-extra slim"
+DEVELOPMENT="$DEVELOPMENT eclipse-cdt monodevelop qt5"
+OFFICE="$OFFICE libreoffice"
+WEB="$WEB firefox pidgin skype flashplayer transmission-cli transmission-gtk"
+MEDIA="$MEDIA vlc ffmpeg mplayer gimp blender"
 fi
 
-if [[ $CONSOLE == 1 ]]
-then
-GUI=$GUI "tmux" #console window manager
-DEVELOPMENT=$DEVELOPMENT "emacs"
-OFFICE=$OFFICE ""
-WEB=$WEB "links profanity transmission-cli"
-MEDIA=$MEDIA "moc mplayer"
+if [[ $CONSOLE == 1 ]]; then
+GUI="$GUI tmux" #console window manager
+DEVELOPMENT="$DEVELOPMENT emacs"
+OFFICE=$OFFICE 
+WEB="$WEB links profanity transmission-cli"
+MEDIA="$MEDIA moc mplayer"
 fi
 
 APPLICATIONS="$SYSTEM $ACCESSORIES $GUI $OFFICE $DEVELOPMENT $WEB $MEDIA"
@@ -91,8 +89,7 @@ cp ./sshd_config $MOUNT_POINT/etc/ssh/sshd_config
 arch-chroot $MOUNT_POINT systemctl enable sshd.service
 
 #set autostart grphical login
-if [[ $GRAPHICAL == 1 ]]
-then
+if [[ $GRAPHICAL == 1 ]]; then
 arch-chroot $MOUNT_POINT systemctl enable slim
 fi
 
@@ -102,8 +99,7 @@ arch-chroot $MOUNT_POINT abs
 
 VBOX=$((lspci) | grep VirtualBox)
 
-if [[ $VBOX != "" ]]
-then
+if [[ $VBOX != "" ]]; then
 #install vbox guests
 arch-chroot $MOUNT_POINT pacman -S virtualbox-guest-utils
 arch-chroot $MOUNT_POINT systemctl enable vboxservice 
@@ -113,14 +109,12 @@ arch-chroot $MOUNT_POINT modprobe -a vboxguest vboxsf vboxvideo
 "vboxvideo" >> $MOUNT_POINT/etc/modules-load.d/virtualbox.conf
 fi
 
-if [[ $(uname -m) == "x86_64" ]]
-then
+if [[ $(uname -m) == "x86_64" ]]; then
 #install x86_64 bit dependecies
 fi
 
 #install yaourt package manager
-if [[ $YAOURT_GIT == 1 ]]
-then
+if [[ $YAOURT_GIT == 1 ]]; then
 pacman -S git --noconfirm
 git clone https://aur.archlinux.org/package-query.git
 cd package-query
