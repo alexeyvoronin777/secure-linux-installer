@@ -1,4 +1,4 @@
-#/bin/sh
+#!/bin/sh
 
 #phisical volume name
 VOLUME=/dev/sda
