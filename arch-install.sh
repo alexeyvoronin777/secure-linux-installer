@@ -48,7 +48,7 @@ APPLICATIONS="$SYSTEM $ACCESSORIES $GUI $OFFICE $DEVELOPMENT $WEB $MEDIA"
 
 #create encrypted device
 cryptsetup luksFormat $PARTITION
-cryptSetup luksOpen $PARTITION cryptDevice
+cryptsetup luksOpen $PARTITION cryptDevice
 
 
 #create virtual partitions
@@ -56,8 +56,8 @@ pvcreate /dev/mapper/cryptDevice
 
 vgcreate vg /dev/mapper/cryptDevice
 
-lvcreate -L --size 200M vg --name boot
-lvcreate -L --size "$SWAP"M vg --name swap
+lvcreate -L 200M vg --name boot
+lvcreate -L "$SWAP"M vg --name swap
 lvcreate -l +100%FREE vg --name root
 
 mkfs.ext2 /dev/mapper/vg-boot
@@ -169,7 +169,7 @@ arch-chroot $MOUNT_POINT useradd -m -g users -G wheel,video,storage -s /bin/bash
 "$NEW_USER ALL=(ALL) ALL" >> $MOUNT_POINT/etc/sudoers
 arch-chroot $MOUNT_POINT passwd $NEW_USER
 
-umount -p $MOUNT_POINT
+umount -R $MOUNT_POINT
 swapoff -a
 
 reboot
