@@ -154,6 +154,14 @@ echo WORKLINUX > $MOUNT_POINT/etc/hostname
 arch-chroot $MOUNT_POINT systemctl enable dhcpcd.service
 #arch-chroot $MOUNT_POINT systemctl enable dhcpcd@enp0s3.service
 
+#network performance
+#/etc/security/limits.conf
+#* - nofile 1048576
+#/etc/sysctl.conf
+# Если используете netfilter/iptables, увеличить лимит нужно и здесь: 
+#net.ipv4.netfilter.ip_conntrack_max = 1048576
+
+
 # Set root password
 arch-chroot $MOUNT_POINT passwd
 
