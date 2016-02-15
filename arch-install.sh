@@ -8,7 +8,7 @@ MOUNT_POINT=/mnt
 #mode
 GRAPHICAL=1
 CONSOLE=1
-YAOURT_GIT=0
+YAOURT=0
 
 NEW_USER=alan
 
@@ -114,22 +114,14 @@ if [[ $(uname -m) == "x86_64" ]]; then
 fi
 
 #install yaourt package manager
-if [[ $YAOURT_GIT == 1 ]]; then
-pacman -S git --noconfirm
-git clone https://aur.archlinux.org/package-query.git
-cd package-query
-makepkg -si
-cd ..
-git clone https://aur.archlinux.org/yaourt.git
-cd yaourt
-makepkg -si
-cd ..
-elif
+if [[ $YAOURT == 1 ]]; then
+echo "" >> $MOUNT_POINT/etc/pacman.conf
 echo "[archlinuxfr]" >> $MOUNT_POINT/etc/pacman.conf
 echo "SigLevel = Never" >> $MOUNT_POINT/etc/pacman.conf
-echo "Server = http://repo.archlinux.fr/$arch" >> $MOUNT_POINT/etc/pacman.conf
+echo "Server = http://repo.archlinux.fr/\$arch" >> $MOUNT_POINT/etc/pacman.conf
 echo "" >> $MOUNT_POINT/etc/pacman.conf
-pacman -Sy yaourt --noconfirm
+arch-chroot $MOUNT_POINT pacman -Sy yaourt --noconfirm
+arch-chroot $MOUNT_POINT yaourt -Syua --noconfirm
 fi
 
 #configuration initrd
