@@ -29,6 +29,7 @@ EMULATORS="wine qemu"
 
 if [[ $GRAPHICAL == 1 ]]
 then
+ACCESSORIES=$ACCESSORIES "lilyterm"
 GUI=$GUI "xorg-server xorg-server-utils xorg-xinit mate mate-extra slim"
 DEVELOPMENT=$DEVELOPMENT "eclipse-cdt monodevelop qt5"
 OFFICE=$OFFICE "libreoffice"
