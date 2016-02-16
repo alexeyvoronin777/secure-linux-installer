@@ -18,7 +18,7 @@ TAIL=$RAM/5
 SWAP=$(($RAM+$TAIL))
 
 #applications list
-SYSTEM="base grub net-tools sudo"
+SYSTEM="grub net-tools sudo"
 ACCESSORIES="mc curl rsync gpm unzip jre8-openjdk java-openjfx"
 GUI=""
 OFFICE=""
@@ -74,11 +74,18 @@ mount /dev/mapper/vg-root $MOUNT_POINT
 mkdir $MOUNT_POINT/boot
 mount /dev/mapper/vg-boot $MOUNT_POINT/boot
 
-pacstrap $MOUNT_POINT $APPLICATIONS
-if [ $status -ne 0 ]; then
-  echo "error with $1" >&2
-  exit 1
+pacstrap $MOUNT_POINT base
+
+if [[ $(uname -m) == x86_64 ]]; then
+echo "" >> $MOUNT_POINT/etc/pacman.conf
+echo "[multilib]" >> $MOUNT_POINT/etc/pacman.conf
+echo "Include = /etc/pacman.d/mirrorlist" >> $MOUNT_POINT/etc/pacman.conf
+echo "" >> $MOUNT_POINT/etc/pacman.conf
+arch-chroot $MOUNT_POINT pacman -Syu
 fi
+
+pacstrap $MOUNT_POINT $APPLICATIONS
+
 
 genfstab -pU $MOUNT_POINT >> $MOUNT_POINT/etc/fstab
 
