@@ -99,7 +99,7 @@ arch-chroot $MOUNT_POINT systemctl enable slim
 fi
 
 #install ports
-arch-chroot $MOUNT_POINT "pacman -S abs --noconfirm"
+arch-chroot $MOUNT_POINT pacman -S abs --noconfirm
 arch-chroot $MOUNT_POINT abs
 
 VBOX=$((lspci) | grep VirtualBox)
@@ -112,10 +112,6 @@ arch-chroot $MOUNT_POINT modprobe -a vboxguest vboxsf vboxvideo
 echo "vboxguest" >> $MOUNT_POINT/etc/modules-load.d/virtualbox.conf
 echo "vboxsf" >> $MOUNT_POINT/etc/modules-load.d/virtualbox.conf
 echo "vboxvideo" >> $MOUNT_POINT/etc/modules-load.d/virtualbox.conf
-fi
-
-if [[ $(uname -m) == "x86_64" ]]; then
-#install x86_64 bit dependecies
 fi
 
 #install yaourt package manager
