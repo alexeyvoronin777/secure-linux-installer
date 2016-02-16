@@ -158,6 +158,7 @@ sed -i.bak '/stty/#tty/g' $MOUNT_POINT/etc/securetty
 
 #password bruteforce protection
 echo "auth required pam_tally.so deny=2 unlock_time=600 onerr=succeed file=/var/log/faillog" >> $MOUNT_POINT/etc/pam.d/login
+echo "password	required	pam_unix.so sha512 shadow nullok rounds=65536" >> /etc/pam.d/passwd
 
 #netwok configuration
 arch-chroot $MOUNT_POINT systemctl enable dhcpcd.service
