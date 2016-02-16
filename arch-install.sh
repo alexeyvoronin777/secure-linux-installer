@@ -46,6 +46,9 @@ fi
 
 APPLICATIONS="$SYSTEM $ACCESSORIES $GUI $OFFICE $DEVELOPMENT $WEB $MEDIA"
 
+#write random values on partition
+dd if=/dev/urandom of=$PARTITION
+
 #create encrypted device
 cryptsetup luksFormat $PARTITION
 cryptsetup luksOpen $PARTITION cryptDevice
