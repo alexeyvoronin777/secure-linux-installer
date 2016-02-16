@@ -153,7 +153,7 @@ echo ' ' >> $MOUNT_POINT/etc/profile.d/shell-timeout.sh
 #setup permissions
 chmod 700 /boot /etc/{iptables,arptables} 
 
-#deisable root login
+#disable root login
 sed -i.bak '/stty/#tty/g' $MOUNT_POINT/etc/securetty
 
 #netwok configuration
