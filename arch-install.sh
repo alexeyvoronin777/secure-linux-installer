@@ -156,6 +156,9 @@ chmod 700 /boot /etc/{iptables,arptables}
 #disable root login
 sed -i.bak '/stty/#tty/g' $MOUNT_POINT/etc/securetty
 
+#password bruteforce protection
+echo "auth required pam_tally.so onerr=succeed file=/var/log/faillog" >> $MOUNT_POINT/etc/pam.d/login
+
 #netwok configuration
 arch-chroot $MOUNT_POINT systemctl enable dhcpcd.service
 #arch-chroot $MOUNT_POINT systemctl enable dhcpcd@enp0s3.service
