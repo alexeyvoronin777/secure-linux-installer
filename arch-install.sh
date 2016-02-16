@@ -158,11 +158,13 @@ arch-chroot $MOUNT_POINT systemctl enable dhcpcd.service
 
 
 # Set root password
+echo "Set root password:"
 arch-chroot $MOUNT_POINT passwd
 
 #add new user
 arch-chroot $MOUNT_POINT useradd -m -g users -G wheel,video,storage -s /bin/bash $NEW_USER
 "$NEW_USER ALL=(ALL) ALL" >> $MOUNT_POINT/etc/sudoers
+echo "Set $NEW_USER password:"
 arch-chroot $MOUNT_POINT passwd $NEW_USER
 
 umount -R $MOUNT_POINT
