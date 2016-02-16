@@ -24,7 +24,7 @@ GUI=""
 OFFICE=""
 DEVELOPMENT="base-devel gcc gdb cmake python clang jdk8-openjdk git subversion mercurial boost"
 WEB=""
-MEDIA=""
+MEDIA="pulseaudio"
 EMULATORS="wine qemu"
 
 if [[ $GRAPHICAL == 1 ]]; then
@@ -33,7 +33,7 @@ GUI="$GUI xorg-server xorg-server-utils xorg-xinit mate mate-extra slim"
 DEVELOPMENT="$DEVELOPMENT eclipse-cpp monodevelop qt5"
 OFFICE="$OFFICE libreoffice"
 WEB="$WEB firefox pidgin skype flashplayer transmission-cli transmission-gtk"
-MEDIA="$MEDIA vlc ffmpeg mplayer gimp blender"
+MEDIA="$MEDIA vlc ffmpeg mplayer gimp blender pavucontrol"
 fi
 
 if [[ $CONSOLE == 1 ]]; then
@@ -41,7 +41,7 @@ GUI="$GUI tmux" #console window manager
 DEVELOPMENT="$DEVELOPMENT emacs"
 OFFICE=$OFFICE 
 WEB="$WEB links profanity transmission-cli"
-MEDIA="$MEDIA moc mplayer"
+MEDIA="$MEDIA moc mplayer ponymix"
 fi
 
 APPLICATIONS="$SYSTEM $ACCESSORIES $GUI $OFFICE $DEVELOPMENT $WEB $MEDIA"
