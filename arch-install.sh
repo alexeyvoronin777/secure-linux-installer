@@ -142,6 +142,20 @@ arch-chroot $MOUNT_POINT grub-install $VOLUME
 # Set the hostname
 echo WORKLINUX > $MOUNT_POINT/etc/hostname
 
+#set timeout for console
+echo 'TMOUT="$(( 60*10 ))";' >> $MOUNT_POINT/etc/profile.d/shell-timeout.sh
+echo '[ -z "$DISPLAY" ] && export TMOUT;' >> $MOUNT_POINT/etc/profile.d/shell-timeout.sh
+echo 'case $( /usr/bin/tty ) in' >> $MOUNT_POINT/etc/profile.d/shell-timeout.sh
+echo '	/dev/tty[0-9]*) export TMOUT;;' >> $MOUNT_POINT/etc/profile.d/shell-timeout.sh
+echo 'esac ' >> $MOUNT_POINT/etc/profile.d/shell-timeout.sh
+echo ' ' >> $MOUNT_POINT/etc/profile.d/shell-timeout.sh
+
+#setup permissions
+chmod 700 /boot /etc/{iptables,arptables} 
+
+#deisable root login
+sed -i.bak '/stty/#tty/g' $MOUNT_POINT/etc/securetty
+
 #netwok configuration
 arch-chroot $MOUNT_POINT systemctl enable dhcpcd.service
 #arch-chroot $MOUNT_POINT systemctl enable dhcpcd@enp0s3.service
