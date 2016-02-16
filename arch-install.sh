@@ -30,7 +30,7 @@ EMULATORS="wine qemu"
 if [[ $GRAPHICAL == 1 ]]; then
 ACCESSORIES="$ACCESSORIES lilyterm"
 GUI="$GUI xorg-server xorg-server-utils xorg-xinit mate mate-extra slim"
-DEVELOPMENT="$DEVELOPMENT eclipse-cdt monodevelop qt5"
+DEVELOPMENT="$DEVELOPMENT eclipse-cpp monodevelop qt5"
 OFFICE="$OFFICE libreoffice"
 WEB="$WEB firefox pidgin skype flashplayer transmission-cli transmission-gtk"
 MEDIA="$MEDIA vlc ffmpeg mplayer gimp blender"
