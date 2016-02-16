@@ -75,6 +75,10 @@ mkdir $MOUNT_POINT/boot
 mount /dev/mapper/vg-boot $MOUNT_POINT/boot
 
 pacstrap $MOUNT_POINT $APPLICATIONS
+if [ $status -ne 0 ]; then
+  echo "error with $1" >&2
+  exit 1
+fi
 
 genfstab -pU $MOUNT_POINT >> $MOUNT_POINT/etc/fstab
 
