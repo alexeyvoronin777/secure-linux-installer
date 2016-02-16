@@ -156,10 +156,12 @@ chmod 700 $MOUNT_POINT/boot $MOUNT_POINT/etc/{iptables,arptables}
 #disable root login
 sed -i.bak '/stty/#tty/g' $MOUNT_POINT/etc/securetty
 
-#password bruteforce protection
-echo "password required pam_cracklib.so retry=2 minlen=10 difok=6 dcredit=-1 ucredit=-1 ocredit=-1 lcredit=-1" >> $MOUNT_POINT/etc/pam.d/login
-echo "password required pam_unix.so use_authtok sha512 shadow" >> $MOUNT_POINT/etc/pam.d/login
-echo "password	required pam_unix.so sha512 shadow nullok rounds=65536" >> $MOUNT_POINT/etc/pam.d/passwd
+#user password protection
+echo "auth required pam_tally.so deny=2 unlock_time=600 onerr=succeed file=/var/log/faillog" >> $MOUNT_POINT/etc/pam.d/system-login
+echo "password required pam_cracklib.so retry=2 minlen=10 difok=6 dcredit=-1 ucredit=-1 ocredit=-1 lcredit=-1" >> $MOUNT_POINT/etc/pam.d/passwd
+echo "password required pam_unix.so use_authtok sha512 shadow" >> $MOUNT_POINT/etc/pam.d/passwd
+echo "auth		required	pam_wheel.so use_uid" >> $MOUNT_POINT/etc/pam.d/su
+echo "auth		required	pam_wheel.so use_uid" >> $MOUNT_POINT/etc/pam.d/su-l
 
 #netwok configuration
 arch-chroot $MOUNT_POINT systemctl enable dhcpcd.service
