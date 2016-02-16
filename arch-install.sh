@@ -149,7 +149,6 @@ arch-chroot $MOUNT_POINT systemctl enable dhcpcd.service
 #/etc/security/limits.conf
 #* - nofile 1048576
 #/etc/sysctl.conf
-# Если используете netfilter/iptables, увеличить лимит нужно и здесь: 
 #net.ipv4.netfilter.ip_conntrack_max = 1048576
 
 
