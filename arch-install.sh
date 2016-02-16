@@ -106,7 +106,7 @@ VBOX=$((lspci) | grep VirtualBox)
 
 if [[ $VBOX != "" ]]; then
 #install vbox guests
-arch-chroot $MOUNT_POINT pacman -S virtualbox-guest-utils
+arch-chroot $MOUNT_POINT pacman -S virtualbox-guest-utils --noconfirm
 arch-chroot $MOUNT_POINT systemctl enable vboxservice 
 arch-chroot $MOUNT_POINT modprobe -a vboxguest vboxsf vboxvideo
 echo "vboxguest" >> $MOUNT_POINT/etc/modules-load.d/virtualbox.conf
