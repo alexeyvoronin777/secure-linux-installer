@@ -84,7 +84,7 @@ echo "" >> $MOUNT_POINT/etc/pacman.conf
 arch-chroot $MOUNT_POINT pacman -Syu
 fi
 
-pacstrap $MOUNT_POINT $APPLICATIONS
+arch-chroot $MOUNT_POINT pacman -S $APPLICATIONS
 
 
 genfstab -pU $MOUNT_POINT >> $MOUNT_POINT/etc/fstab
