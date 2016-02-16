@@ -28,11 +28,11 @@ MEDIA="pulseaudio"
 EMULATORS="wine qemu"
 
 if [[ $GRAPHICAL == 1 ]]; then
-ACCESSORIES="$ACCESSORIES lilyterm"
+ACCESSORIES="$ACCESSORIES lilyterm keepassx"
 GUI="$GUI xorg-server xorg-server-utils xorg-xinit mate mate-extra slim"
 DEVELOPMENT="$DEVELOPMENT eclipse-cpp monodevelop qt5"
 OFFICE="$OFFICE libreoffice"
-WEB="$WEB firefox pidgin skype flashplayer transmission-cli transmission-gtk"
+WEB="$WEB firefox pidgin skype flashplayer transmission-cli transmission-gtk claws-mail"
 MEDIA="$MEDIA vlc ffmpeg mplayer gimp blender pavucontrol"
 fi
 
