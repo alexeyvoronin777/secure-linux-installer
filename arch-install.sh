@@ -101,7 +101,6 @@ arch-chroot $MOUNT_POINT locale-gen
 
 #install secure remote shell
 arch-chroot $MOUNT_POINT pacman -S openssh --noconfirm
-cp ./sshd_config $MOUNT_POINT/etc/ssh/sshd_config
 arch-chroot $MOUNT_POINT systemctl enable sshd.service
 
 #set autostart grphical login
@@ -184,6 +183,9 @@ arch-chroot $MOUNT_POINT systemctl enable dhcpcd.service
 #/etc/sysctl.conf
 #net.ipv4.netfilter.ip_conntrack_max = 1048576
 
+#copy configs
+echo "Configuration..."
+cp -R ./etc $MOUNT_POINT/
 
 # Set root password
 echo "Set root password:"
