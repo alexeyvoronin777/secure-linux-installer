@@ -4,6 +4,7 @@
 VOLUME=/dev/sda
 PARTITION="$VOLUME"1
 MOUNT_POINT=/mnt
+HOSTNAME=WORKLINUX
 
 #mode
 GRAPHICAL=1
@@ -137,20 +138,24 @@ fi
 
 #configuration initrd
 # Add 'ext4' to MODULES
-sed -i.bak '/sMODULES=""/MODULES="ext4"/g' $MOUNT_POINT/etc/mkinitcpio.conf
+sed 's/MODULES=""/MODULES="ext4"/g' $MOUNT_POINT/etc/mkinitcpio.conf > $MOUNT_POINT/etc/mkinitcpio.conf.new
+cp $MOUNT_POINT/etc/mkinitcpio.conf.new $MOUNT_POINT/etc/mkinitcpio.conf
+rm $MOUNT_POINT/etc/mkinitcpio.conf.new
 # Add 'encrypt' and 'lvm2' to HOOKS before filesystems
 
 arch-chroot $MOUNT_POINT /usr/bin/mkinitcpio -p linux
 
 #Configuration grub for encryption
-sed -i.bak '/sGRUB_CMDLINE_LINUX=""/GRUB_CMDLINE_LINUX="cryptdevice=/dev/sda1:cryptDevice"/g' $MOUNT_POINT/etc/default/grub
+sed 's/GRUB_CMDLINE_LINUX=""/GRUB_CMDLINE_LINUX="cryptdevice=$PARTITION:cryptDevice"/g' $MOUNT_POINT/etc/default/grub > $MOUNT_POINT/etc/default/grub.new
+cp $MOUNT_POINT/etc/default/grub.new $MOUNT_POINT/etc/default/grub
+rm $MOUNT_POINT/etc/default/grub.new
 echo "GRUB_ENABLE_CRYPTODISK=y" >> $MOUNT_POINT/etc/default/grub
 
 arch-chroot $MOUNT_POINT grub-mkconfig -o /boot/grub/grub.cfg
 arch-chroot $MOUNT_POINT grub-install $VOLUME
 
 # Set the hostname
-echo WORKLINUX > $MOUNT_POINT/etc/hostname
+echo $HOSTNAME > $MOUNT_POINT/etc/hostname
 
 #set timeout for console
 echo 'TMOUT="$(( 60*10 ))";' >> $MOUNT_POINT/etc/profile.d/shell-timeout.sh
@@ -164,7 +169,9 @@ echo ' ' >> $MOUNT_POINT/etc/profile.d/shell-timeout.sh
 chmod 700 $MOUNT_POINT/boot $MOUNT_POINT/etc/{iptables,arptables} 
 
 #disable root login
-sed -i.bak '/stty/#tty/g' $MOUNT_POINT/etc/securetty
+sed 's/tty/#tty/g' $MOUNT_POINT/etc/securetty > $MOUNT_POINT/etc/securetty.new
+cp $MOUNT_POINT/etc/securetty.new $MOUNT_POINT/etc/securetty
+rm $MOUNT_POINT/etc/securetty.new
 
 #user password protection
 echo "auth required pam_tally.so deny=2 unlock_time=600 onerr=succeed file=/var/log/faillog" >> $MOUNT_POINT/etc/pam.d/system-login
@@ -175,7 +182,6 @@ echo "auth		required	pam_wheel.so use_uid" >> $MOUNT_POINT/etc/pam.d/su-l
 
 #netwok configuration
 arch-chroot $MOUNT_POINT systemctl enable dhcpcd.service
-#arch-chroot $MOUNT_POINT systemctl enable dhcpcd@enp0s3.service
 
 #network performance
 #/etc/security/limits.conf
