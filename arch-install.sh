@@ -142,6 +142,9 @@ sed 's/MODULES=""/MODULES="ext4"/g' $MOUNT_POINT/etc/mkinitcpio.conf > $MOUNT_PO
 cp $MOUNT_POINT/etc/mkinitcpio.conf.new $MOUNT_POINT/etc/mkinitcpio.conf
 rm $MOUNT_POINT/etc/mkinitcpio.conf.new
 # Add 'encrypt' and 'lvm2' to HOOKS before filesystems
+sed 's/keyboard fsck/keyboard fsck encrypt lvm2/g' $MOUNT_POINT/etc/mkinitcpio.conf > $MOUNT_POINT/etc/mkinitcpio.conf.new
+cp $MOUNT_POINT/etc/mkinitcpio.conf.new $MOUNT_POINT/etc/mkinitcpio.conf
+rm $MOUNT_POINT/etc/mkinitcpio.conf.new
 
 arch-chroot $MOUNT_POINT /usr/bin/mkinitcpio -p linux
 
