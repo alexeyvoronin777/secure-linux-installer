@@ -157,14 +157,6 @@ arch-chroot $MOUNT_POINT grub-install $VOLUME
 # Set the hostname
 echo $HOSTNAME > $MOUNT_POINT/etc/hostname
 
-#set timeout for console
-echo 'TMOUT="$(( 60*10 ))";' >> $MOUNT_POINT/etc/profile.d/shell-timeout.sh
-echo '[ -z "$DISPLAY" ] && export TMOUT;' >> $MOUNT_POINT/etc/profile.d/shell-timeout.sh
-echo 'case $( /usr/bin/tty ) in' >> $MOUNT_POINT/etc/profile.d/shell-timeout.sh
-echo '	/dev/tty[0-9]*) export TMOUT;;' >> $MOUNT_POINT/etc/profile.d/shell-timeout.sh
-echo 'esac ' >> $MOUNT_POINT/etc/profile.d/shell-timeout.sh
-echo ' ' >> $MOUNT_POINT/etc/profile.d/shell-timeout.sh
-
 #setup permissions
 chmod 700 $MOUNT_POINT/boot $MOUNT_POINT/etc/{iptables,arptables} 
 
@@ -203,8 +195,9 @@ echo "$NEW_USER ALL=(ALL) ALL" >> $MOUNT_POINT/etc/sudoers
 echo "Set $NEW_USER password:"
 arch-chroot $MOUNT_POINT passwd $NEW_USER
 
-umount -R $MOUNT_POINT
 swapoff -a
+umount -R $MOUNT_POINT
+
 
 #reboot
 
