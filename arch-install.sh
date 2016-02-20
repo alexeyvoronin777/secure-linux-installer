@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #phisical volume name
-VOLUME=/dev/sda
+VOLUME=\/dev\/sda
 PARTITION="$VOLUME"1
 MOUNT_POINT=/mnt
 HOSTNAME=WORKLINUX
@@ -149,7 +149,7 @@ rm $MOUNT_POINT/etc/mkinitcpio.conf.new
 arch-chroot $MOUNT_POINT /usr/bin/mkinitcpio -p linux
 
 #Configuration grub for encryption
-sed 's/GRUB_CMDLINE_LINUX=""/GRUB_CMDLINE_LINUX="cryptdevice=$PARTITION:cryptDevice"/g' $MOUNT_POINT/etc/default/grub > $MOUNT_POINT/etc/default/grub.new
+sed 's/GRUB_CMDLINE_LINUX=""/GRUB_CMDLINE_LINUX="cryptdevice='"$PARTITION"':cryptDevice"/g' $MOUNT_POINT/etc/default/grub > $MOUNT_POINT/etc/default/grub.new
 cp $MOUNT_POINT/etc/default/grub.new $MOUNT_POINT/etc/default/grub
 rm $MOUNT_POINT/etc/default/grub.new
 echo "GRUB_ENABLE_CRYPTODISK=y" >> $MOUNT_POINT/etc/default/grub
