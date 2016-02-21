@@ -5,6 +5,8 @@ VOLUME=\/dev\/sda
 PARTITION="$VOLUME"1
 MOUNT_POINT=/mnt
 HOSTNAME=WORKLINUX
+LVM_GROUP=vg
+CRYPT_DEVICE=cryptDevice
 
 #mode
 GRAPHICAL=1
@@ -54,26 +56,26 @@ echo "Done."
 
 #create encrypted device
 cryptsetup luksFormat $PARTITION
-cryptsetup luksOpen $PARTITION cryptDevice
+cryptsetup luksOpen $PARTITION $CRYPT_DEVICE
 
 
 #create virtual partitions
-pvcreate /dev/mapper/cryptDevice
+pvcreate /dev/mapper/$CRYPT_DEVICE
 
-vgcreate vg /dev/mapper/cryptDevice
+vgcreate $LVM_GROUP /dev/mapper/$CRYPT_DEVICE
 
-lvcreate -L 200M vg --name boot
-lvcreate -L "$SWAP"M vg --name swap
-lvcreate -l +100%FREE vg --name root
+lvcreate -L 200M $LVM_GROUP --name boot
+lvcreate -L "$SWAP"M $LVM_GROUP --name swap
+lvcreate -l +100%FREE $LVM_GROUP --name root
 
-mkfs.ext2 /dev/mapper/vg-boot
-mkfs.ext4 /dev/mapper/vg-root
-mkswap /dev/mapper/vg-swap
+mkfs.ext2 /dev/mapper/$LVM_GROUP-boot
+mkfs.ext4 /dev/mapper/$LVM_GROUP-root
+mkswap /dev/mapper/$LVM_GROUP-swap
 
-swapon /dev/mapper/vg-swap
-mount /dev/mapper/vg-root $MOUNT_POINT
+swapon /dev/mapper/$LVM_GROUP-swap
+mount /dev/mapper/$LVM_GROUP-root $MOUNT_POINT
 mkdir $MOUNT_POINT/boot
-mount /dev/mapper/vg-boot $MOUNT_POINT/boot
+mount /dev/mapper/$LVM_GROUP-boot $MOUNT_POINT/boot
 
 pacstrap $MOUNT_POINT base
 
@@ -149,7 +151,7 @@ rm $MOUNT_POINT/etc/mkinitcpio.conf.new
 arch-chroot $MOUNT_POINT /usr/bin/mkinitcpio -p linux
 
 #Configuration grub for encryption
-sed 's/GRUB_CMDLINE_LINUX=""/GRUB_CMDLINE_LINUX="cryptdevice='"$PARTITION"':cryptDevice"/g' $MOUNT_POINT/etc/default/grub > $MOUNT_POINT/etc/default/grub.new
+sed 's/GRUB_CMDLINE_LINUX=""/GRUB_CMDLINE_LINUX="cryptdevice='"$PARTITION"':'"$CRYPT_DEVICE""/g' $MOUNT_POINT/etc/default/grub > $MOUNT_POINT/etc/default/grub.new
 cp $MOUNT_POINT/etc/default/grub.new $MOUNT_POINT/etc/default/grub
 rm $MOUNT_POINT/etc/default/grub.new
 echo "GRUB_ENABLE_CRYPTODISK=y" >> $MOUNT_POINT/etc/default/grub
