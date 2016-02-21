@@ -21,7 +21,7 @@ TAIL=$RAM/5
 SWAP=$(($RAM+$TAIL))
 
 #applications list
-SYSTEM="grub net-tools sudo"
+SYSTEM="grub net-tools sudo ntfs-3g ntfsprogs"
 ACCESSORIES="mc curl rsync gpm unzip jre8-openjdk java-openjfx"
 GUI=""
 OFFICE=""
