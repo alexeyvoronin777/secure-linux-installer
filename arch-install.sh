@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #phisical volume name
-VOLUME=\/dev\/sda
+VOLUME="\/dev\/sda"
 PARTITION="$VOLUME"1
 MOUNT_POINT=/mnt
 HOSTNAME=WORKLINUX
