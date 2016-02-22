@@ -85,12 +85,22 @@ add_new_user(){
     arch-chroot $MOUNT_POINT passwd $NEW_USER
 }
 
-
+########################################
+# Write random values to partition
+# Arguments:
+#       Partition name
+# Returns:
+#       None
+########################################
+write_random_to_partrtion(){
+    local $PARTITION=$1
+    echo "Write random values on partition..."
+    dd if=/dev/urandom of=$PARTITION
+    echo "Done."
+}
 
 #write random values on partition
-echo "Write random values on partition..."
-dd if=/dev/urandom of=$PARTITION
-echo "Done."
+write_random_to_partrtion $PARTITION
 
 #create encrypted device
 cryptsetup luksFormat $PARTITION
