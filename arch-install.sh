@@ -486,7 +486,7 @@ add_new_user $NEW_USER
 
 swapoff -a
 umount -R $MOUNT_POINT
-
+cryptsetup luksClose $CRYPT_DEVICE
 
 #reboot
 
