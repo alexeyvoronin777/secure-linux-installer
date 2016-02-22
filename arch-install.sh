@@ -358,6 +358,52 @@ create_and_mount_lvm_partitions(){
     echo "Done."
 }
 
+########################################
+# Configuration initrd
+# Globals:
+#   MOUNT_POINT
+# Arguments:
+#       None
+# Returns:
+#       None
+########################################
+configuration_initrd(){
+    echo "Configuration initrd..."
+    # Add 'ext4' to MODULES
+    sed 's/MODULES=""/MODULES="ext4"/g' $MOUNT_POINT/etc/mkinitcpio.conf > $MOUNT_POINT/etc/mkinitcpio.conf.new
+    cp $MOUNT_POINT/etc/mkinitcpio.conf.new $MOUNT_POINT/etc/mkinitcpio.conf
+    rm $MOUNT_POINT/etc/mkinitcpio.conf.new
+    # Add 'encrypt' and 'lvm2' to HOOKS before filesystems
+    sed 's/keyboard fsck/keyboard fsck encrypt lvm2/g' $MOUNT_POINT/etc/mkinitcpio.conf > $MOUNT_POINT/etc/mkinitcpio.conf.new
+    cp $MOUNT_POINT/etc/mkinitcpio.conf.new $MOUNT_POINT/etc/mkinitcpio.conf
+    rm $MOUNT_POINT/etc/mkinitcpio.conf.new
+    
+    arch-chroot $MOUNT_POINT /usr/bin/mkinitcpio -p linux   
+    echo "Done."
+}
+
+########################################
+# Setup and install grub
+# Globals:
+#   MOUNT_POINT
+#   VOLUME
+# Arguments:
+#       None
+# Returns:
+#       None
+########################################
+setup_and_install_grub(){
+    echo "Setup and install grub..."
+    sed 's/GRUB_CMDLINE_LINUX=""/GRUB_CMDLINE_LINUX="cryptdevice='"$(adaptation_regular $PARTITION)"':'"$CRYPT_DEVICE"'"''/g' $MOUNT_POINT/etc/default/grub > $MOUNT_POINT/etc/default/grub.new
+    cp $MOUNT_POINT/etc/default/grub.new $MOUNT_POINT/etc/default/grub
+    rm $MOUNT_POINT/etc/default/grub.new
+    echo "GRUB_ENABLE_CRYPTODISK=y" >> $MOUNT_POINT/etc/default/grub
+    
+    arch-chroot $MOUNT_POINT grub-mkconfig -o /boot/grub/grub.cfg
+    arch-chroot $MOUNT_POINT grub-install $VOLUME
+    echo "Done."
+}
+
 #write random values on partition
 write_random_to_partition $PARTITION
 
@@ -404,25 +450,10 @@ install_addinitional_package_manager
 fi
 
 #configuration initrd
-# Add 'ext4' to MODULES
-sed 's/MODULES=""/MODULES="ext4"/g' $MOUNT_POINT/etc/mkinitcpio.conf > $MOUNT_POINT/etc/mkinitcpio.conf.new
-cp $MOUNT_POINT/etc/mkinitcpio.conf.new $MOUNT_POINT/etc/mkinitcpio.conf
-rm $MOUNT_POINT/etc/mkinitcpio.conf.new
-# Add 'encrypt' and 'lvm2' to HOOKS before filesystems
-sed 's/keyboard fsck/keyboard fsck encrypt lvm2/g' $MOUNT_POINT/etc/mkinitcpio.conf > $MOUNT_POINT/etc/mkinitcpio.conf.new
-cp $MOUNT_POINT/etc/mkinitcpio.conf.new $MOUNT_POINT/etc/mkinitcpio.conf
-rm $MOUNT_POINT/etc/mkinitcpio.conf.new
-
-arch-chroot $MOUNT_POINT /usr/bin/mkinitcpio -p linux
+configuration_initrd
 
 #Configuration grub for encryption
-sed 's/GRUB_CMDLINE_LINUX=""/GRUB_CMDLINE_LINUX="cryptdevice='"$(adaptation_regular $PARTITION)"':'"$CRYPT_DEVICE"'"''/g' $MOUNT_POINT/etc/default/grub > $MOUNT_POINT/etc/default/grub.new
-cp $MOUNT_POINT/etc/default/grub.new $MOUNT_POINT/etc/default/grub
-rm $MOUNT_POINT/etc/default/grub.new
-echo "GRUB_ENABLE_CRYPTODISK=y" >> $MOUNT_POINT/etc/default/grub
-
-arch-chroot $MOUNT_POINT grub-mkconfig -o /boot/grub/grub.cfg
-arch-chroot $MOUNT_POINT grub-install $VOLUME
+setup_and_install_grub
 
 # Set the hostname
 setup_hostname
