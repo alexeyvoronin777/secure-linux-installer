@@ -221,6 +221,111 @@ install_vbox_modules(){
     echo "Done."
 }
 
+########################################
+# Install ports
+# Globals:
+#   MOUNT_POINT
+# Arguments:
+#       None
+# Returns:
+#       None
+########################################
+install_ports(){
+    echo "Install ports..."
+    arch-chroot $MOUNT_POINT pacman -S abs --noconfirm
+    arch-chroot $MOUNT_POINT abs
+    echo "Done."
+}
+
+########################################
+# Install addinitional package manager
+# Globals:
+#   MOUNT_POINT
+# Arguments:
+#       None
+# Returns:
+#       None
+########################################
+install_addinitional_package_manager(){
+    echo "Install addinitional package manager..."
+    echo "" >> $MOUNT_POINT/etc/pacman.conf
+    echo "[archlinuxfr]" >> $MOUNT_POINT/etc/pacman.conf
+    echo "SigLevel = Never" >> $MOUNT_POINT/etc/pacman.conf
+    echo "Server = http://repo.archlinux.fr/\$arch" >> $MOUNT_POINT/etc/pacman.conf
+    echo "" >> $MOUNT_POINT/etc/pacman.conf
+    arch-chroot $MOUNT_POINT pacman -Sy yaourt --noconfirm
+    arch-chroot $MOUNT_POINT yaourt -Syua --noconfirm
+    echo "Done."
+}
+
+########################################
+# Setup host name
+# Globals:
+#   MOUNT_POINT
+# Arguments:
+#       host name
+# Returns:
+#       None
+########################################
+setup_hostname(){
+    echo "Setup hostname..."
+    local $HOSTNAME=$1
+    echo $HOSTNAME > $MOUNT_POINT/etc/hostname
+    echo "Done."
+}
+
+########################################
+# Setup multilibrary
+# Globals:
+#   MOUNT_POINT
+# Arguments:
+#       None
+# Returns:
+#       None
+########################################
+setup_multilibrary(){
+    echo "Setup multilibrary..."
+    if [[ $(uname -m) == x86_64 ]]; then
+    echo "" >> $MOUNT_POINT/etc/pacman.conf
+    echo "[multilib]" >> $MOUNT_POINT/etc/pacman.conf
+    echo "Include = /etc/pacman.d/mirrorlist" >> $MOUNT_POINT/etc/pacman.conf
+    echo "" >> $MOUNT_POINT/etc/pacman.conf
+    arch-chroot $MOUNT_POINT pacman -Syu
+    fi
+    echo "Done."
+}
+
+########################################
+# Install core
+# Globals:
+#   MOUNT_POINT
+# Arguments:
+#       None
+# Returns:
+#       None
+########################################
+install_core(){
+    echo "Install core..."
+    pacstrap $MOUNT_POINT base
+    echo "Done."
+}
+
+########################################
+# Install user applications
+# Globals:
+#   MOUNT_POINT
+#   APPLICATIONS
+# Arguments:
+#       None
+# Returns:
+#       None
+########################################
+install_user_applications(){
+    echo "Install user applications..."
+    arch-chroot $MOUNT_POINT pacman -S $APPLICATIONS --noconfirm
+    echo "Done."
+}
+
 #write random values on partition
 write_random_to_partrtion $PARTITION
 
@@ -247,18 +352,12 @@ mount /dev/mapper/$LVM_GROUP-root $MOUNT_POINT
 mkdir $MOUNT_POINT/boot
 mount /dev/mapper/$LVM_GROUP-boot $MOUNT_POINT/boot
 
-pacstrap $MOUNT_POINT base
+install_core
 
-if [[ $(uname -m) == x86_64 ]]; then
-echo "" >> $MOUNT_POINT/etc/pacman.conf
-echo "[multilib]" >> $MOUNT_POINT/etc/pacman.conf
-echo "Include = /etc/pacman.d/mirrorlist" >> $MOUNT_POINT/etc/pacman.conf
-echo "" >> $MOUNT_POINT/etc/pacman.conf
-arch-chroot $MOUNT_POINT pacman -Syu
-fi
+setup_multilibrary
 
 #install applications
-arch-chroot $MOUNT_POINT pacman -S $APPLICATIONS --noconfirm
+install_user_applications
 
 #setup mount pointes
 setup_mount_pointes
@@ -278,20 +377,13 @@ arch-chroot $MOUNT_POINT systemctl enable slim
 fi
 
 #install ports
-arch-chroot $MOUNT_POINT pacman -S abs --noconfirm
-arch-chroot $MOUNT_POINT abs
+install_ports
 
 install_vbox_modules
 
 #install yaourt package manager
 if [[ $YAOURT == 1 ]]; then
-echo "" >> $MOUNT_POINT/etc/pacman.conf
-echo "[archlinuxfr]" >> $MOUNT_POINT/etc/pacman.conf
-echo "SigLevel = Never" >> $MOUNT_POINT/etc/pacman.conf
-echo "Server = http://repo.archlinux.fr/\$arch" >> $MOUNT_POINT/etc/pacman.conf
-echo "" >> $MOUNT_POINT/etc/pacman.conf
-arch-chroot $MOUNT_POINT pacman -Sy yaourt --noconfirm
-arch-chroot $MOUNT_POINT yaourt -Syua --noconfirm
+install_addinitional_package_manager
 fi
 
 #configuration initrd
@@ -316,7 +408,7 @@ arch-chroot $MOUNT_POINT grub-mkconfig -o /boot/grub/grub.cfg
 arch-chroot $MOUNT_POINT grub-install $VOLUME
 
 # Set the hostname
-echo $HOSTNAME > $MOUNT_POINT/etc/hostname
+setup_hostname
 
 #setup permissions
 chmod 700 $MOUNT_POINT/boot $MOUNT_POINT/etc/{iptables,arptables} 
@@ -342,10 +434,7 @@ echo "Set root password:"
 arch-chroot $MOUNT_POINT passwd
 
 #add new user
-arch-chroot $MOUNT_POINT useradd -m -g users -G wheel,video,storage -s /bin/bash $NEW_USER
-echo "$NEW_USER ALL=(ALL) ALL" >> $MOUNT_POINT/etc/sudoers
-echo "Set $NEW_USER password:"
-arch-chroot $MOUNT_POINT passwd $NEW_USER
+add_new_user $NEW_USER
 
 swapoff -a
 umount -R $MOUNT_POINT
