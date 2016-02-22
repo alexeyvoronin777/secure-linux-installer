@@ -99,6 +99,128 @@ write_random_to_partrtion(){
     echo "Done."
 }
 
+########################################
+# Up-protection password
+# Globals:
+#   MOUNT_POINT
+# Arguments:
+#       None
+# Returns:
+#       None
+########################################
+up_protection_password(){
+    #disable root login
+    sed 's/tty/#tty/g' $MOUNT_POINT/etc/securetty > $MOUNT_POINT/etc/securetty.new
+    cp $MOUNT_POINT/etc/securetty.new $MOUNT_POINT/etc/securetty
+    rm $MOUNT_POINT/etc/securetty.new    
+    echo "auth required pam_tally.so deny=2 unlock_time=600 onerr=succeed file=/var/log/faillog" >> $MOUNT_POINT/etc/pam.d/system-login
+    echo "password required pam_cracklib.so retry=2 minlen=10 difok=6 dcredit=-1 ucredit=-1 ocredit=-1 lcredit=-1" >> $MOUNT_POINT/etc/pam.d/passwd
+    echo "password required pam_unix.so use_authtok sha512 shadow" >> $MOUNT_POINT/etc/pam.d/passwd
+    echo "auth		required	pam_wheel.so use_uid" >> $MOUNT_POINT/etc/pam.d/su
+    echo "auth		required	pam_wheel.so use_uid" >> $MOUNT_POINT/etc/pam.d/su-l
+}
+
+########################################
+# Netowork configuration
+# Arguments:
+#       None
+# Returns:
+#       None
+########################################
+write_random_to_partrtion(){
+   echo "network configuration..."
+   arch-chroot $MOUNT_POINT systemctl enable dhcpcd.service
+   echo "Done."
+}
+
+########################################
+# Update locales
+# Arguments:
+#       None
+# Returns:
+#       None
+########################################
+update_locales(){
+    echo "update locales..."
+    echo LANG=en_US.UTF-8 >> $MOUNT_POINT/etc/locale.conf
+    echo LANGUAGE=en_US >> $MOUNT_POINT/etc/locale.conf
+    echo LC_ALL=C >> $MOUNT_POINT/etc/locale.conf
+    arch-chroot $MOUNT_POINT locale-gen
+    echo "Done."
+}
+
+########################################
+# Install Secure Shell
+# Globals:
+#   MOUNT_POINT
+# Arguments:
+#       None
+# Returns:
+#       None
+########################################
+ssh_install(){
+    echo "install ssh..."
+    arch-chroot $MOUNT_POINT pacman -S openssh --noconfirm
+    arch-chroot $MOUNT_POINT systemctl enable sshd.service
+    echo "Done."
+}
+
+########################################
+# Setup time
+# Globals:
+#   MOUNT_POINT
+# Arguments:
+#       None
+# Returns:
+#       None
+########################################
+setup_time(){
+    echo "setup time..."
+    ln -s $MOUNT_POINT/usr/share/zoneinfo/Europe/Kiev $MOUNT_POINT/etc/localtime
+    arch-chroot $MOUNT_POINT hwclock --systohc --utc
+    echo "Done."
+}
+
+########################################
+# Setup mount pointes
+# Globals:
+#   MOUNT_POINT
+# Arguments:
+#       None
+# Returns:
+#       None
+########################################
+setup_mount_pointes(){
+    echo "setup mount pointes..."
+    genfstab -pU $MOUNT_POINT >> $MOUNT_POINT/etc/fstab
+    echo "Done."
+}
+
+########################################
+# Install VirtualBox modules
+# Globals:
+#   MOUNT_POINT
+# Arguments:
+#       None
+# Returns:
+#       None
+########################################
+install_vbox_modules(){
+    local VBOX=$((lspci) | grep VirtualBox)
+
+    if [[ $VBOX != "" ]]; then
+    echo "Install VirtualBox modules..."
+    #install vbox guests
+    arch-chroot $MOUNT_POINT pacman -S virtualbox-guest-utils --noconfirm
+    arch-chroot $MOUNT_POINT systemctl enable vboxservice 
+    arch-chroot $MOUNT_POINT modprobe -a vboxguest vboxsf vboxvideo
+    echo "vboxguest" >> $MOUNT_POINT/etc/modules-load.d/virtualbox.conf
+    echo "vboxsf" >> $MOUNT_POINT/etc/modules-load.d/virtualbox.conf
+    echo "vboxvideo" >> $MOUNT_POINT/etc/modules-load.d/virtualbox.conf
+    fi
+    echo "Done."
+}
+
 #write random values on partition
 write_random_to_partrtion $PARTITION
 
@@ -135,24 +257,20 @@ echo "" >> $MOUNT_POINT/etc/pacman.conf
 arch-chroot $MOUNT_POINT pacman -Syu
 fi
 
+#install applications
 arch-chroot $MOUNT_POINT pacman -S $APPLICATIONS --noconfirm
 
-
-genfstab -pU $MOUNT_POINT >> $MOUNT_POINT/etc/fstab
+#setup mount pointes
+setup_mount_pointes
 
 # Setup system clock
-ln -s $MOUNT_POINT/usr/share/zoneinfo/Europe/Kiev $MOUNT_POINT/etc/localtime
-arch-chroot $MOUNT_POINT hwclock --systohc --utc
+setup_time
 
 # Update locale
-echo LANG=en_US.UTF-8 >> $MOUNT_POINT/etc/locale.conf
-echo LANGUAGE=en_US >> $MOUNT_POINT/etc/locale.conf
-echo LC_ALL=C >> $MOUNT_POINT/etc/locale.conf
-arch-chroot $MOUNT_POINT locale-gen
+update_locales
 
 #install secure remote shell
-arch-chroot $MOUNT_POINT pacman -S openssh --noconfirm
-arch-chroot $MOUNT_POINT systemctl enable sshd.service
+ssh_install
 
 #set autostart grphical login
 if [[ $GRAPHICAL == 1 ]]; then
@@ -163,17 +281,7 @@ fi
 arch-chroot $MOUNT_POINT pacman -S abs --noconfirm
 arch-chroot $MOUNT_POINT abs
 
-VBOX=$((lspci) | grep VirtualBox)
-
-if [[ $VBOX != "" ]]; then
-#install vbox guests
-arch-chroot $MOUNT_POINT pacman -S virtualbox-guest-utils --noconfirm
-arch-chroot $MOUNT_POINT systemctl enable vboxservice 
-arch-chroot $MOUNT_POINT modprobe -a vboxguest vboxsf vboxvideo
-echo "vboxguest" >> $MOUNT_POINT/etc/modules-load.d/virtualbox.conf
-echo "vboxsf" >> $MOUNT_POINT/etc/modules-load.d/virtualbox.conf
-echo "vboxvideo" >> $MOUNT_POINT/etc/modules-load.d/virtualbox.conf
-fi
+install_vbox_modules
 
 #install yaourt package manager
 if [[ $YAOURT == 1 ]]; then
@@ -213,20 +321,11 @@ echo $HOSTNAME > $MOUNT_POINT/etc/hostname
 #setup permissions
 chmod 700 $MOUNT_POINT/boot $MOUNT_POINT/etc/{iptables,arptables} 
 
-#disable root login
-sed 's/tty/#tty/g' $MOUNT_POINT/etc/securetty > $MOUNT_POINT/etc/securetty.new
-cp $MOUNT_POINT/etc/securetty.new $MOUNT_POINT/etc/securetty
-rm $MOUNT_POINT/etc/securetty.new
-
 #user password protection
-echo "auth required pam_tally.so deny=2 unlock_time=600 onerr=succeed file=/var/log/faillog" >> $MOUNT_POINT/etc/pam.d/system-login
-echo "password required pam_cracklib.so retry=2 minlen=10 difok=6 dcredit=-1 ucredit=-1 ocredit=-1 lcredit=-1" >> $MOUNT_POINT/etc/pam.d/passwd
-echo "password required pam_unix.so use_authtok sha512 shadow" >> $MOUNT_POINT/etc/pam.d/passwd
-echo "auth		required	pam_wheel.so use_uid" >> $MOUNT_POINT/etc/pam.d/su
-echo "auth		required	pam_wheel.so use_uid" >> $MOUNT_POINT/etc/pam.d/su-l
+up_protection_password
 
 #netwok configuration
-arch-chroot $MOUNT_POINT systemctl enable dhcpcd.service
+write_random_to_partrtion
 
 #network performance
 #/etc/security/limits.conf
