@@ -87,7 +87,7 @@ add_new_user(){
 # Returns:
 #       None
 ########################################
-write_random_to_partrtion(){
+write_random_to_partition(){
     local $PARTITION=$1
     echo "Write random values on partition..."
     dd if=/dev/urandom of=$PARTITION
@@ -359,7 +359,7 @@ create_and_mount_lvm_partitions(){
 }
 
 #write random values on partition
-write_random_to_partrtion $PARTITION
+write_random_to_partition $PARTITION
 
 #create encrypted device
 cryptsetup luksFormat $PARTITION
