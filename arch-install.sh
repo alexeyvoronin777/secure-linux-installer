@@ -122,7 +122,7 @@ up_protection_password(){
 # Returns:
 #       None
 ########################################
-write_random_to_partrtion(){
+network_configuration(){
    echo "network configuration..."
    arch-chroot $MOUNT_POINT systemctl enable dhcpcd.service
    echo "Done."
@@ -465,7 +465,7 @@ chmod 700 $MOUNT_POINT/boot $MOUNT_POINT/etc/{iptables,arptables}
 up_protection_password
 
 #netwok configuration
-write_random_to_partrtion
+network_configuration
 
 #network performance
 #/etc/security/limits.conf
