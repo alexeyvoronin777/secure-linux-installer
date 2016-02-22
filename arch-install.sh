@@ -17,11 +17,6 @@ YAOURT=1
 
 NEW_USER=alan
 
-#calculate size for swap partition
-RAM=$(free -m | awk '/^Mem:/{print $2}')
-TAIL=$RAM/5
-SWAP=$(($RAM+$TAIL))
-
 #applications list
 SYSTEM="grub net-tools sudo ntfs-3g ntfsprogs"
 ACCESSORIES="mc curl rsync gpm unzip jre8-openjdk java-openjfx"
@@ -326,6 +321,43 @@ install_user_applications(){
     echo "Done."
 }
 
+########################################
+# Create and mount LVM partitions
+# Globals:
+#   MOUNT_POINT
+#   LVM_GROUP
+#   CRYPT_DEVICE
+# Arguments:
+#       None
+# Returns:
+#       None
+########################################
+create_and_mount_lvm_partitions(){
+    #calculate size for swap partition
+    local RAM=$(free -m | awk '/^Mem:/{print $2}')
+    local TAIL=$RAM/5
+    local SWAP=$(($RAM+$TAIL))
+    echo "Create and mount LVM partitions..."
+    #create virtual partitions
+    pvcreate /dev/mapper/$CRYPT_DEVICE
+    
+    vgcreate $LVM_GROUP /dev/mapper/$CRYPT_DEVICE
+    
+    lvcreate -L 200M $LVM_GROUP --name boot
+    lvcreate -L "$SWAP"M $LVM_GROUP --name swap
+    lvcreate -l +100%FREE $LVM_GROUP --name root
+    
+    mkfs.ext2 /dev/mapper/$LVM_GROUP-boot
+    mkfs.ext4 /dev/mapper/$LVM_GROUP-root
+    mkswap /dev/mapper/$LVM_GROUP-swap
+    
+    swapon /dev/mapper/$LVM_GROUP-swap
+    mount /dev/mapper/$LVM_GROUP-root $MOUNT_POINT
+    mkdir $MOUNT_POINT/boot
+    mount /dev/mapper/$LVM_GROUP-boot $MOUNT_POINT/boot
+    echo "Done."
+}
+
 #write random values on partition
 write_random_to_partrtion $PARTITION
 
@@ -335,22 +367,7 @@ cryptsetup luksOpen $PARTITION $CRYPT_DEVICE
 
 
 #create virtual partitions
-pvcreate /dev/mapper/$CRYPT_DEVICE
-
-vgcreate $LVM_GROUP /dev/mapper/$CRYPT_DEVICE
-
-lvcreate -L 200M $LVM_GROUP --name boot
-lvcreate -L "$SWAP"M $LVM_GROUP --name swap
-lvcreate -l +100%FREE $LVM_GROUP --name root
-
-mkfs.ext2 /dev/mapper/$LVM_GROUP-boot
-mkfs.ext4 /dev/mapper/$LVM_GROUP-root
-mkswap /dev/mapper/$LVM_GROUP-swap
-
-swapon /dev/mapper/$LVM_GROUP-swap
-mount /dev/mapper/$LVM_GROUP-root $MOUNT_POINT
-mkdir $MOUNT_POINT/boot
-mount /dev/mapper/$LVM_GROUP-boot $MOUNT_POINT/boot
+create_and_mount_lvm_partitions
 
 install_core
 
