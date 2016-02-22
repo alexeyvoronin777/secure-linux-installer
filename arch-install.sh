@@ -1,4 +1,6 @@
-#!/bin/sh
+#!/bin/bash
+#
+# Secure Linux installer script.
 
 #phisical volume name
 VOLUME="\/dev\/sda"
@@ -48,6 +50,22 @@ MEDIA="$MEDIA moc mplayer ponymix"
 fi
 
 APPLICATIONS="$SYSTEM $ACCESSORIES $GUI $OFFICE $DEVELOPMENT $WEB $MEDIA"
+
+
+########################################
+# Convert string for regular expression
+# Arguments:
+#       Input string
+# Returns:
+#       None
+########################################
+adaptation_regular(){
+    local pattern="/"
+    local newchar="\/"
+    local val=${1//$pattern/$newchar}
+    echo $val
+}
+
 
 #write random values on partition
 echo "Write random values on partition..."
