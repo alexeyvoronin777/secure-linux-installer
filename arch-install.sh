@@ -67,6 +67,26 @@ adaptation_regular(){
 }
 
 
+######################################
+# Create new user.
+# Globals:
+#       MOUNT_POINT
+# Arguments:
+#       User name
+# Returns:
+#       None
+######################################
+add_new_user(){
+    local $NEW_USER=$1
+    arch-chroot $MOUNT_POINT useradd -m -g users\
+    -G wheel,video,storage -s /bin/bash $NEW_USER
+    echo "$NEW_USER ALL=(ALL) ALL" >> $MOUNT_POINT/etc/sudoers
+    echo "Set $NEW_USER password:"
+    arch-chroot $MOUNT_POINT passwd $NEW_USER
+}
+
+
+
 #write random values on partition
 echo "Write random values on partition..."
 dd if=/dev/urandom of=$PARTITION
