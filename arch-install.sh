@@ -11,7 +11,7 @@ LVM_GROUP=vg
 CRYPT_DEVICE=cryptDevice
 
 #mode
-GRAPHICAL=1
+GRAPHICAL=
 CONSOLE=1
 YAOURT=1
 
@@ -305,8 +305,9 @@ install_core(){
     echo "Done."
 }
 
-########################################
-# Install user applications
+#########################################
+# Configuration bash prifles for new user
+# and root.
 # Globals:
 #   MOUNT_POINT
 #   NEW_USER
@@ -314,7 +315,7 @@ install_core(){
 #       None
 # Returns:
 #       None
-########################################
+#########################################
 setup_bash_profile(){
     echo "Setup bash profile..."
     echo "PS1='\[\e[1;32m\][\u@\h \W]\$\[\e[0m\] '" >> $MOUNT_POINT/home/$NEW_USER/.bashrc
