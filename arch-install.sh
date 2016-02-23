@@ -458,9 +458,14 @@ update_locales
 #install secure remote shell
 ssh_install
 
-#set autostart grphical login
+#set autostart graphical login
 if [[ $GRAPHICAL == 1 ]]; then
 arch-chroot $MOUNT_POINT systemctl enable slim
+fi
+
+#set autostart mouse in console
+if [[ $CONSOLE == 1 ]]; then
+arch-chroot $MOUNT_POINT systemctl enable gpm
 fi
 
 #install ports
@@ -507,6 +512,9 @@ arch-chroot $MOUNT_POINT passwd
 
 #add new user
 add_new_user $NEW_USER
+
+#set once login
+setup_once_login
 
 swapoff -a
 umount -R $MOUNT_POINT
