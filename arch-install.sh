@@ -440,7 +440,7 @@ setup_once_login(){
     echo "Setup key for once login..."
     echo "Generate random key in root."
     dd bs=512 count=4 if=/dev/urandom of=$KEY_PATH
-    echo "Add key."
+    echo "Add key to encrypt partitition..."
     cryptsetup luksAddKey $PARTITION $KEY_PATH
     echo "Add key to initrd..."
     # Add 'encrypt' and 'lvm2' to HOOKS before filesystems
@@ -520,9 +520,6 @@ up_protection_password
 #netwok configuration
 network_configuration
 
-#setup bash profile
-setup_bash_profile
-
 #network performance
 #/etc/security/limits.conf
 #* - nofile 1048576
@@ -539,6 +536,9 @@ arch-chroot $MOUNT_POINT passwd
 
 #add new user
 add_new_user $NEW_USER
+
+#setup bash profile. Need after add new user
+setup_bash_profile
 
 #set once login
 setup_once_login
