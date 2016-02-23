@@ -309,6 +309,23 @@ install_core(){
 # Install user applications
 # Globals:
 #   MOUNT_POINT
+#   NEW_USER
+# Arguments:
+#       None
+# Returns:
+#       None
+########################################
+setup_bash_profile(){
+    echo "Setup bash profile..."
+    echo "PS1='\[\e[1;32m\][\u@\h \W]\$\[\e[0m\] '" >> $MOUNT_POINT/home/$NEW_USER/.bashrc
+    echo "PS1='\[\e[1;31m\][\u@\h \W]\$\[\e[0m\] '" >> $MOUNT_POINT/root/.bashrc
+    echo "Done."
+}
+
+########################################
+# Install user applications
+# Globals:
+#   MOUNT_POINT
 #   APPLICATIONS
 # Arguments:
 #       None
@@ -498,6 +515,9 @@ up_protection_password
 
 #netwok configuration
 network_configuration
+
+#setup bash profile
+setup_bash_profile
 
 #network performance
 #/etc/security/limits.conf
