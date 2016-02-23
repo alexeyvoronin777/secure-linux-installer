@@ -1,4 +1,4 @@
 #!/bin/sh
 
-exec mate-session
+exec $1
 
