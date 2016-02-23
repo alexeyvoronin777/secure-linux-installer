@@ -436,10 +436,10 @@ setup_and_install_grub(){
 #       None
 ########################################
 setup_once_login(){
-    local KEY_PATH=$MOUNT_POINT/crypto_keyfile.bin
+    local KEY_PATH=/crypto_keyfile.bin
     echo "Setup key for once login..."
     echo "Generate random key in root."
-    dd bs=512 count=4 if=/dev/urandom of=$KEY_PATH
+    dd bs=512 count=4 if=/dev/urandom of="$MOUNT_POINT""$KEY_PATH"
     echo "Add key to encrypt partitition..."
     cryptsetup luksAddKey $PARTITION $KEY_PATH
     echo "Add key to initrd..."
@@ -447,7 +447,7 @@ setup_once_login(){
     sed 's/FILES=""/FILES="'"$(adaptation_regular $KEY_PATH)"'"/g' $MOUNT_POINT/etc/mkinitcpio.conf > $MOUNT_POINT/etc/mkinitcpio.conf.new
     cp $MOUNT_POINT/etc/mkinitcpio.conf.new $MOUNT_POINT/etc/mkinitcpio.conf
     rm $MOUNT_POINT/etc/mkinitcpio.conf.new
-    mkinitcpio -p linux
+    arch-chroot mkinitcpio -p linux
     echo "Done."
 }
 
