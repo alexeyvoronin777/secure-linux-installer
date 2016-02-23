@@ -318,6 +318,9 @@ install_core(){
 #########################################
 setup_bash_profile(){
     echo "Setup bash profile..."
+    sed 's/PS1/#PS1/g' $MOUNT_POINT/etc/securetty > $MOUNT_POINT/home/$NEW_USER/.bashrc.new
+    cp $MOUNT_POINT/home/$NEW_USER/.bashrc.new $MOUNT_POINT/home/$NEW_USER/.bashrc
+    rm $MOUNT_POINT/home/$NEW_USER/.bashrc
     echo "PS1='\[\e[1;32m\][\u@\h \W]\$\[\e[0m\] '" >> $MOUNT_POINT/home/$NEW_USER/.bashrc
     echo "PS1='\[\e[1;31m\][\u@\h \W]\$\[\e[0m\] '" >> $MOUNT_POINT/root/.bashrc
     echo "Done."
