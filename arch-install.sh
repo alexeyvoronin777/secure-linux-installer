@@ -436,7 +436,7 @@ setup_and_install_grub(){
 #       None
 ########################################
 setup_once_login(){
-    local KEY_PATH=/crypto_keyfile.bin
+    local KEY_PATH=$MOUNT_POINT/crypto_keyfile.bin
     echo "Setup key for once login..."
     echo "Generate random key in root."
     dd bs=512 count=4 if=/dev/urandom of=$KEY_PATH
