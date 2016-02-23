@@ -398,7 +398,7 @@ setup_and_install_grub(){
     cp $MOUNT_POINT/etc/default/grub.new $MOUNT_POINT/etc/default/grub
     rm $MOUNT_POINT/etc/default/grub.new
     echo "GRUB_ENABLE_CRYPTODISK=y" >> $MOUNT_POINT/etc/default/grub
-    
+    #echo 'GRUB_BACKGROUND="/root/1.png"'' >> $MOUNT_POINT/etc/default/grub
     arch-chroot $MOUNT_POINT grub-mkconfig -o /boot/grub/grub.cfg
     arch-chroot $MOUNT_POINT grub-install $VOLUME
     echo "Done."
