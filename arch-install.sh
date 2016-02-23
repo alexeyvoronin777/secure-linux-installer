@@ -408,7 +408,6 @@ setup_and_install_grub(){
 # Setup key for once login
 # Globals:
 #   MOUNT_POINT
-#   VOLUME
 # Arguments:
 #       None
 # Returns:
