@@ -462,6 +462,7 @@ ssh_install
 
 #set autostart graphical login
 if [[ $GRAPHICAL == 1 ]]; then
+arch-chroot $MOUNT_POINT pacman -S slim-themes archlinux-themes-slim --noconfirm
 arch-chroot $MOUNT_POINT systemctl enable slim
 fi
 
