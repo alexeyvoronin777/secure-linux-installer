@@ -447,7 +447,7 @@ setup_once_login(){
     sed 's/FILES=""/FILES="'"$(adaptation_regular $KEY_PATH)"'"/g' $MOUNT_POINT/etc/mkinitcpio.conf > $MOUNT_POINT/etc/mkinitcpio.conf.new
     cp $MOUNT_POINT/etc/mkinitcpio.conf.new $MOUNT_POINT/etc/mkinitcpio.conf
     rm $MOUNT_POINT/etc/mkinitcpio.conf.new
-    arch-chroot mkinitcpio -p linux
+    arch-chroot $MOUNT_POINT mkinitcpio -p linux
     echo "Done."
 }
 
