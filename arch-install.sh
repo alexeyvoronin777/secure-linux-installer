@@ -18,33 +18,38 @@ YAOURT=1
 NEW_USER=alan
 
 #applications list
-SYSTEM="grub net-tools sudo ntfs-3g ntfsprogs"
-ACCESSORIES="mc curl rsync gpm unzip jre8-openjdk java-openjfx"
+SYSTEM="grub net-tools sudo ntfs-3g ntfsprogs dosfstools f2fs-tools hfsprogs jfsutils e2fsprogs nilfs-utils reiserfsprogs xfsprogs alsi dmidecode hwdetect screenfetch "
+ACCESSORIES="mc curl rsync gpm unzip cpio arj atool lha lrzip lz4 lzop p7zip pixz jre8-openjdk java-openjfx"
 GUI=""
 OFFICE=""
-DEVELOPMENT="base-devel gcc gdb cmake python clang jdk8-openjdk git subversion mercurial"
+DEVELOPMENT="base-devel gcc gdb cmake python clang jdk8-openjdk git subversion mercurial colordiff "
 WEB=""
 MEDIA="pulseaudio"
 EMULATORS="wine qemu"
+SECURITY=""
 
 if [[ $GRAPHICAL == 1 ]]; then
+SYSTEM=$SYSTEM gparted mesa-demos hardinfo 
 ACCESSORIES="$ACCESSORIES lilyterm keepassx"
 GUI="$GUI xorg-server xorg-server-utils xorg-xinit mate mate-extra slim"
 DEVELOPMENT="$DEVELOPMENT eclipse-cpp monodevelop qt5"
 OFFICE="$OFFICE libreoffice"
 WEB="$WEB firefox pidgin skype flashplayer transmission-cli transmission-gtk claws-mail"
 MEDIA="$MEDIA vlc ffmpeg mplayer gimp blender pavucontrol"
+SECURITY="$SECURITY wiresahrd-cli wiresahrd-gtk"
 fi
 
 if [[ $CONSOLE == 1 ]]; then
+SYSTEM=$SYSTEM parted testdisk hdparm handbrake-cli htop
 GUI="$GUI tmux" #console window manager
 DEVELOPMENT="$DEVELOPMENT emacs"
 OFFICE=$OFFICE 
 WEB="$WEB links profanity transmission-cli"
 MEDIA="$MEDIA moc mplayer ponymix"
+SECURITY="$SECURITY nmap tcpdump"
 fi
 
-APPLICATIONS="$SYSTEM $ACCESSORIES $GUI $OFFICE $DEVELOPMENT $WEB $MEDIA"
+APPLICATIONS="$SYSTEM $ACCESSORIES $GUI $OFFICE $DEVELOPMENT $WEB $MEDIA $SECURITY"
 
 
 ########################################
