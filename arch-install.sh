@@ -547,6 +547,7 @@ setup_once_login
 
 swapoff -a
 umount -R $MOUNT_POINT
+vgchange -an $LVM_GROUP
 cryptsetup luksClose $CRYPT_DEVICE
 
 #reboot
