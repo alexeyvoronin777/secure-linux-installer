@@ -441,13 +441,15 @@ setup_once_login(){
     echo "Generate random key in root."
     dd bs=512 count=4 if=/dev/urandom of="$MOUNT_POINT""$KEY_PATH"
     echo "Add key to encrypt partitition..."
-    cryptsetup luksAddKey $PARTITION $KEY_PATH
+    arch-chroot $MOUNT_POINT cryptsetup luksAddKey $PARTITION $KEY_PATH
     echo "Add key to initrd..."
     # Add 'encrypt' and 'lvm2' to HOOKS before filesystems
     sed 's/FILES=""/FILES="'"$(adaptation_regular $KEY_PATH)"'"/g' $MOUNT_POINT/etc/mkinitcpio.conf > $MOUNT_POINT/etc/mkinitcpio.conf.new
     cp $MOUNT_POINT/etc/mkinitcpio.conf.new $MOUNT_POINT/etc/mkinitcpio.conf
     rm $MOUNT_POINT/etc/mkinitcpio.conf.new
     arch-chroot $MOUNT_POINT mkinitcpio -p linux
+    arch-chroot $MOUNT_POINT chmod 000 $KEY_PATH
+    arch-chroot $MOUNT_POINT chmod -R g-rwx,o-rwx /boot
     echo "Done."
 }
 
