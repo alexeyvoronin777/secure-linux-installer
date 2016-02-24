@@ -16,6 +16,8 @@ CONSOLE=1
 YAOURT=1
 
 NEW_USER=alan
+NEW_USER_PASSWORD=""
+ROOT_PASSWORD=""
 
 #applications list
 SYSTEM="grub net-tools sudo ntfs-3g ntfsprogs dosfstools f2fs-tools hfsprogs jfsutils e2fsprogs nilfs-utils reiserfsprogs xfsprogs alsi dmidecode hwdetect screenfetch "
@@ -88,16 +90,17 @@ create_single_partition(){
 #       MOUNT_POINT
 # Arguments:
 #       User name
+#       User password
 # Returns:
 #       None
 ######################################
 add_new_user(){
     local $NEW_USER=$1
+    local $NEW_USER_PASSWORD=$2
     arch-chroot $MOUNT_POINT useradd -m -g users\
     -G wheel,video,storage -s /bin/bash $NEW_USER
     echo "$NEW_USER ALL=(ALL) ALL" >> $MOUNT_POINT/etc/sudoers
-    echo "Set $NEW_USER password:"
-    arch-chroot $MOUNT_POINT passwd $NEW_USER
+    arch-chroot $MOUNT_POINT echo $NEW_USER:$NEW_USER_PASSWORD | chpasswd
 }
 
 ########################################
@@ -574,11 +577,15 @@ echo "Configuration..."
 cp -R ./etc $MOUNT_POINT/
 
 # Set root password
-echo "Set root password:"
+echo -n "Set root password:"
+read -s $ROOT_PASSWORD
+arch-chroot $MOUNT_POINT echo root:$ROOT_PASSWORD | chpasswd
 arch-chroot $MOUNT_POINT passwd
 
 #add new user
-add_new_user $NEW_USER
+echo -n "Set $NEW_USER password:"
+read -s $NEW_USER_PASSWORD
+add_new_user $NEW_USER $NEW_USER_PASSWORD
 
 #setup bash profile. Need after add new user
 setup_bash_profile
