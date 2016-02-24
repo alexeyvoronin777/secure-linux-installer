@@ -26,7 +26,7 @@ DEVELOPMENT="base-devel gcc gdb cmake python clang jdk8-openjdk git subversion m
 WEB=""
 MEDIA="pulseaudio"
 EMULATORS="wine qemu"
-SECURITY=""
+SECURITY="lynis rkhunter"
 
 if [[ $GRAPHICAL == 1 ]]; then
 SYSTEM=$SYSTEM gparted mesa-demos hardinfo 
@@ -66,6 +66,21 @@ adaptation_regular(){
     echo $val
 }
 
+########################################
+# Create single partition
+# Arguments:
+#       name of device
+# Returns:
+#       None
+########################################
+create_single_partition(){
+    local DEVICE=$1
+    echo "WARNING!!! Use full disk space!!!"
+    echo "Create single partition..."
+    parted $DEVICE mklabel msdos
+    parted $DEVICE mkpart primary 0% 100%
+    echo "Done."
+}
 
 ######################################
 # Create new user.
@@ -118,6 +133,24 @@ up_protection_password(){
     echo "password required pam_unix.so use_authtok sha512 shadow" >> $MOUNT_POINT/etc/pam.d/passwd
     echo "auth		required	pam_wheel.so use_uid" >> $MOUNT_POINT/etc/pam.d/su
     echo "auth		required	pam_wheel.so use_uid" >> $MOUNT_POINT/etc/pam.d/su-l
+}
+
+########################################
+# Install aide auditing tool
+# Globals:
+#   MOUNT_POINT
+# Arguments:
+#       None
+# Returns:
+#       None
+########################################
+install_aide(){
+   echo "Install aide auditing tool..."
+   arch-chroot $MOUNT_POINT pacman -S aide --noconfirm
+   echo "First init aide database..."
+   arch-chroot $MOUNT_POINT aide --init
+   mv $MOUNT_POINT/var/lib/aide/aide.db.new.gz $MOUNT_POINT/var/lib/aide/aide.db.gz
+   echo "Done."
 }
 
 ########################################
@@ -458,6 +491,9 @@ setup_once_login(){
     echo "Done."
 }
 
+#create single partition
+create_single_partition $VOLUME
+
 #write random values on partition
 write_random_to_partition $PARTITION
 
@@ -549,6 +585,9 @@ setup_bash_profile
 
 #set once login
 setup_once_login
+
+#init aide audite tool
+install_aide
 
 swapoff -a
 umount -R $MOUNT_POINT
