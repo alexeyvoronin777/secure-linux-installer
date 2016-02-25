@@ -550,11 +550,11 @@ setup_once_login(){
     echo "Done."
 }
 
-#create single partition
-create_single_partition $VOLUME
+##create single partition
+#create_single_partition $VOLUME
 
 #write random values on partition
-write_random_to_partition $PARTITION
+#write_random_to_partition $PARTITION
 
 #create encrypted device
 cryptsetup luksFormat $PARTITION
