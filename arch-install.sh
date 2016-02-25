@@ -52,7 +52,7 @@ SECURITY="$SECURITY nmap tcpdump"
 fi
 
 APPLICATIONS="$SYSTEM $ACCESSORIES $GUI $OFFICE $DEVELOPMENT $WEB $MEDIA $SECURITY"
-
+SELINUX_APPLICATIONS="systemd-selinux "
 
 ########################################
 # Convert string for regular expression
@@ -101,6 +101,33 @@ add_new_user(){
     -G wheel,video,storage -s /bin/bash $NEW_USER
     echo "$NEW_USER ALL=(ALL) ALL" >> $MOUNT_POINT/etc/sudoers
     arch-chroot $MOUNT_POINT echo $NEW_USER:$NEW_USER_PASSWORD | chpasswd
+}
+
+######################################
+# Install setup SELinux
+# Globals:
+#       MOUNT_POINT
+# Arguments:
+#       None
+# Returns:
+#       None
+######################################
+setup_selinux(){
+    echo "Setup SELinux..."
+    echo "" >> $MOUNT_POINT/etc/pacman.conf
+    echo "[siosm-aur]" >> $MOUNT_POINT/etc/pacman.conf
+    echo "Server = http://siosm.fr/repo/$repo/" >> $MOUNT_POINT/etc/pacman.conf
+    echo "" >> $MOUNT_POINT/etc/pacman.conf
+    echo "" >> $MOUNT_POINT/etc/pacman.conf
+    echo "[siosm-selinux]" >> $MOUNT_POINT/etc/pacman.conf
+    echo "Server = http://siosm.fr/repo/$repo/" >> $MOUNT_POINT/etc/pacman.conf
+    echo "" >> $MOUNT_POINT/etc/pacman.conf    
+    arch-chroot $MOUNT_POINT pacman-key --recv-keys C8D83B6AE4B8685A7290545FDB27818F78688F83
+    arch-chroot $MOUNT_POINT pacman -Syu --noconfirm
+    arch-chroot $MOUNT_POINT pacman -S $SELINUX_APPLICATIONS --noconfirm
+    arch-chroot $MOUNT_POINT grub-mkconfig -o /boot/grub/grub.cfg
+    arch-chroot $MOUNT_POINT grub-install $VOLUME
+    echo "Done."
 }
 
 ########################################
@@ -592,6 +619,9 @@ setup_bash_profile
 
 #set once login
 setup_once_login
+
+#setup SELinux
+setup_selinux
 
 #init aide audite tool
 install_aide
