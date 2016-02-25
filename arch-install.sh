@@ -54,7 +54,7 @@ fi
 APPLICATIONS="$SYSTEM $ACCESSORIES $GUI $OFFICE $DEVELOPMENT $WEB $MEDIA $SECURITY"
 SELINUX_APPLICATIONS="linux-selinux systemd-selinux dbus-selinux openssh-selinux \
 cronie-selinux libselinux libsemanage iproute2-selinux findutils-selinux shadow-selinux\
-psmisc-selinux\
+psmisc-selinux logrotate-selinux pam-selinux pambase-selinux \
 coreutils-selinux util-linux-selinux sudo-selinux"
 
 ########################################
@@ -134,21 +134,26 @@ setup_auditd(){
 ######################################
 setup_selinux(){
     echo "Setup SELinux..."
-    echo "" >> $MOUNT_POINT/etc/pacman.conf
-    echo "[siosm-aur]" >> $MOUNT_POINT/etc/pacman.conf
-    echo "Server = http://siosm.fr/repo/$repo/" >> $MOUNT_POINT/etc/pacman.conf
-    echo "" >> $MOUNT_POINT/etc/pacman.conf
-    echo "" >> $MOUNT_POINT/etc/pacman.conf
-    echo "[siosm-selinux]" >> $MOUNT_POINT/etc/pacman.conf
-    echo "Server = http://siosm.fr/repo/$repo/" >> $MOUNT_POINT/etc/pacman.conf
-    echo "" >> $MOUNT_POINT/etc/pacman.conf    
-    arch-chroot $MOUNT_POINT pacman-key --recv-keys C8D83B6AE4B8685A7290545FDB27818F78688F83
-    arch-chroot $MOUNT_POINT pacman -Syu --noconfirm
-    arch-chroot $MOUNT_POINT pacman -S $SELINUX_APPLICATIONS --noconfirm
+    #echo "" >> $MOUNT_POINT/etc/pacman.conf
+    #echo "[siosm-aur]" >> $MOUNT_POINT/etc/pacman.conf
+    #echo "Server = http://siosm.fr/repo/$repo/" >> $MOUNT_POINT/etc/pacman.conf
+    #echo "" >> $MOUNT_POINT/etc/pacman.conf
+    #echo "" >> $MOUNT_POINT/etc/pacman.conf
+    #echo "[siosm-selinux]" >> $MOUNT_POINT/etc/pacman.conf
+    #echo "Server = http://siosm.fr/repo/$repo/" >> $MOUNT_POINT/etc/pacman.conf
+    #echo "" >> $MOUNT_POINT/etc/pacman.conf    
+    #arch-chroot $MOUNT_POINT pacman-key --recv-keys C8D83B6AE4B8685A7290545FDB27818F78688F83
+    #arch-chroot $MOUNT_POINT pacman -Syu --noconfirm
+    #arch-chroot $MOUNT_POINT pacman -S $SELINUX_APPLICATIONS --noconfirm
+    arch-chroot $MOUNT_POINT git clone https://github.com/archlinuxhardened/selinux /root/selinux
+    arch-chroot $MOUNT_POINT /root/selinux/recv_gpg_keys.sh
+    arch-chroot $MOUNT_POINT /root/selinux/build_and_install_all.sh
     arch-chroot $MOUNT_POINT grub-mkconfig -o /boot/grub/grub.cfg
     arch-chroot $MOUNT_POINT grub-install $VOLUME
     mkdir $MOUNT_POINT/selinux
     echo "none   /selinux   selinuxfs   noauto   0   0" >> $MOUNT_POINT/etc/fstab
+    echo "session         required        pam_selinux.so close" >> $MOUNT_POINT/etc/pam.d/login
+    echo "session         required        pam_selinux.so open" >> $MOUNT_POINT/etc/pam.d/login
     echo "Done."
 }
 
