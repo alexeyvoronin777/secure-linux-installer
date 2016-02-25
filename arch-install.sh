@@ -31,7 +31,7 @@ EMULATORS="wine qemu"
 SECURITY="lynis rkhunter"
 
 if [[ $GRAPHICAL == 1 ]]; then
-SYSTEM=$SYSTEM gparted mesa-demos hardinfo 
+SYSTEM="$SYSTEM gparted mesa-demos hardinfo"
 ACCESSORIES="$ACCESSORIES lilyterm keepassx"
 GUI="$GUI xorg-server xorg-server-utils xorg-xinit mate mate-extra slim"
 DEVELOPMENT="$DEVELOPMENT eclipse-cpp monodevelop qt5"
@@ -42,7 +42,7 @@ SECURITY="$SECURITY wiresahrd-cli wiresahrd-gtk"
 fi
 
 if [[ $CONSOLE == 1 ]]; then
-SYSTEM=$SYSTEM parted testdisk hdparm handbrake-cli htop
+SYSTEM="$SYSTEM parted testdisk hdparm handbrake-cli htop"
 GUI="$GUI tmux" #console window manager
 DEVELOPMENT="$DEVELOPMENT emacs"
 OFFICE=$OFFICE 
