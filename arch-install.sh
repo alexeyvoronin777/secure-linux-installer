@@ -104,6 +104,23 @@ add_new_user(){
 }
 
 ######################################
+# Setup auditd. 
+# Need after setup SELinux
+# Globals:
+#       MOUNT_POINT
+# Arguments:
+#       None
+# Returns:
+#       None
+######################################
+setup_auditd(){
+    echo "Setup audit daemon..."
+    arch-chroot $MOUNT_POINT pacman -S audit --noconfirm
+    arch-chroot $MOUNT_POINT enable service.systemd
+    echo "Done."
+}
+
+######################################
 # Install setup SELinux
 # Globals:
 #       MOUNT_POINT
@@ -623,8 +640,11 @@ setup_once_login
 #setup SELinux
 setup_selinux
 
+#setup auditd
+setup_auditd
+
 #init aide audite tool
-install_aide
+#install_aide
 
 swapoff -a
 umount -R $MOUNT_POINT
