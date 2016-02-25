@@ -52,7 +52,10 @@ SECURITY="$SECURITY nmap tcpdump"
 fi
 
 APPLICATIONS="$SYSTEM $ACCESSORIES $GUI $OFFICE $DEVELOPMENT $WEB $MEDIA $SECURITY"
-SELINUX_APPLICATIONS="systemd-selinux "
+SELINUX_APPLICATIONS="linux-selinux systemd-selinux dbus-selinux openssh-selinux \
+cronie-selinux libselinux libsemanage iproute2-selinux findutils-selinux shadow-selinux\
+psmisc-selinux\
+coreutils-selinux util-linux-selinux sudo-selinux"
 
 ########################################
 # Convert string for regular expression
@@ -144,6 +147,8 @@ setup_selinux(){
     arch-chroot $MOUNT_POINT pacman -S $SELINUX_APPLICATIONS --noconfirm
     arch-chroot $MOUNT_POINT grub-mkconfig -o /boot/grub/grub.cfg
     arch-chroot $MOUNT_POINT grub-install $VOLUME
+    mkdir $MOUNT_POINT/selinux
+    echo "none   /selinux   selinuxfs   noauto   0   0" >> $MOUNT_POINT/etc/fstab
     echo "Done."
 }
 
