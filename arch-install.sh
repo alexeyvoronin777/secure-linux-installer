@@ -145,9 +145,11 @@ setup_selinux(){
     #arch-chroot $MOUNT_POINT pacman-key --recv-keys C8D83B6AE4B8685A7290545FDB27818F78688F83
     #arch-chroot $MOUNT_POINT pacman -Syu --noconfirm
     #arch-chroot $MOUNT_POINT pacman -S $SELINUX_APPLICATIONS --noconfirm
-    arch-chroot $MOUNT_POINT git clone https://github.com/archlinuxhardened/selinux /root/selinux
-    arch-chroot $MOUNT_POINT /root/selinux/recv_gpg_keys.sh
-    arch-chroot $MOUNT_POINT /root/selinux/build_and_install_all.sh
+    arch-chroot $MOUNT_POINT wget https://github.com/archlinuxhardened/selinux/archive/master.zip -O /home/$NEW_USER/master.zip
+    arch-chroot $MOUNT_POINT unzip $NEW_USER /home/$NEW_USER/master.zip -d /home/$NEW_USER
+    arch-chroot $MOUNT_POINT chown -R /home/$NEW_USER/selinux-master
+    arch-chroot $MOUNT_POINT /home/$NEW_USER/selinux-master/recv_gpg_keys.sh
+    arch-chroot $MOUNT_POINT /home/$NEW_USER/selinux-master/build_and_install_all.sh
     arch-chroot $MOUNT_POINT grub-mkconfig -o /boot/grub/grub.cfg
     arch-chroot $MOUNT_POINT grub-install $VOLUME
     mkdir $MOUNT_POINT/selinux
