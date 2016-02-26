@@ -179,6 +179,8 @@ setup_selinux(){
     arch-chroot $MOUNT_POINT grub-mkconfig -o /boot/grub/grub.cfg
     arch-chroot $MOUNT_POINT grub-install $VOLUME
     mkdir $MOUNT_POINT/selinux
+    arch-chroot $MOUNT_POINT "cd /etc/selinux/refpolicy/src/policy && make bare && make conf && make install"
+    arch-chroot $MOUNT_POINT systemctl enable restorecond
     echo "none   /selinux   selinuxfs   noauto   0   0" >> $MOUNT_POINT/etc/fstab
     echo "session         required        pam_selinux.so close" >> $MOUNT_POINT/etc/pam.d/login
     echo "session         required        pam_selinux.so open" >> $MOUNT_POINT/etc/pam.d/login
