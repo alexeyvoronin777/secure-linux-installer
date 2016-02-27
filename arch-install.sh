@@ -122,11 +122,10 @@ create_single_partition(){
 ######################################
 add_new_user(){
     local $NEW_USER=$1
-    local $NEW_USER_PASSWORD=$2
     arch-chroot $MOUNT_POINT useradd -m -g users\
     -G wheel,video,storage -s /bin/bash $NEW_USER
     echo "$NEW_USER ALL=(ALL) ALL" >> $MOUNT_POINT/etc/sudoers
-    arch-chroot $MOUNT_POINT echo $NEW_USER:$NEW_USER_PASSWORD | chpasswd
+    arch-chroot $MOUNT_POINT passwd $NEW_USER
 }
 
 ######################################
@@ -157,22 +156,24 @@ setup_auditd(){
 ######################################
 setup_selinux(){
     echo "Setup SELinux..."
-    #echo "" >> $MOUNT_POINT/etc/pacman.conf
-    #echo "[siosm-aur]" >> $MOUNT_POINT/etc/pacman.conf
-    #echo "Server = http://siosm.fr/repo/$repo/" >> $MOUNT_POINT/etc/pacman.conf
-    #echo "" >> $MOUNT_POINT/etc/pacman.conf
-    #echo "" >> $MOUNT_POINT/etc/pacman.conf
-    #echo "[siosm-selinux]" >> $MOUNT_POINT/etc/pacman.conf
-    #echo "Server = http://siosm.fr/repo/$repo/" >> $MOUNT_POINT/etc/pacman.conf
-    #echo "" >> $MOUNT_POINT/etc/pacman.conf    
-    #arch-chroot $MOUNT_POINT pacman-key --recv-keys C8D83B6AE4B8685A7290545FDB27818F78688F83
-    #arch-chroot $MOUNT_POINT pacman -Syu --noconfirm
-    #arch-chroot $MOUNT_POINT pacman -S $SELINUX_APPLICATIONS --noconfirm
-    arch-chroot $MOUNT_POINT wget https://github.com/archlinuxhardened/selinux/archive/master.zip -O /home/$NEW_USER/master.zip
-    arch-chroot $MOUNT_POINT unzip $NEW_USER /home/$NEW_USER/master.zip -d /home/$NEW_USER
-    arch-chroot $MOUNT_POINT chown -R $NEW_USER /home/$NEW_USER/selinux-master
-    arch-chroot $MOUNT_POINT /home/$NEW_USER/selinux-master/recv_gpg_keys.sh
-    arch-chroot $MOUNT_POINT /home/$NEW_USER/selinux-master/build_and_install_all.sh
+    #work only on x86_64
+    echo "" >> $MOUNT_POINT/etc/pacman.conf
+    echo "[siosm-aur]" >> $MOUNT_POINT/etc/pacman.conf
+    echo "Server = http://siosm.fr/repo/$repo/" >> $MOUNT_POINT/etc/pacman.conf
+    echo "" >> $MOUNT_POINT/etc/pacman.conf
+    echo "" >> $MOUNT_POINT/etc/pacman.conf
+    echo "[siosm-selinux]" >> $MOUNT_POINT/etc/pacman.conf
+    echo "Server = http://siosm.fr/repo/$repo/" >> $MOUNT_POINT/etc/pacman.conf
+    echo "" >> $MOUNT_POINT/etc/pacman.conf    
+    arch-chroot $MOUNT_POINT pacman-key --recv-keys C8D83B6AE4B8685A7290545FDB27818F78688F83
+    arch-chroot $MOUNT_POINT pacman -Syu --noconfirm
+    arch-chroot $MOUNT_POINT pacman -S $SELINUX_APPLICATIONS --noconfirm
+    #arch-chroot $MOUNT_POINT wget https://github.com/archlinuxhardened/selinux/archive/master.zip -O /home/$NEW_USER/master.zip
+    #arch-chroot $MOUNT_POINT unzip /home/$NEW_USER/master.zip -d /home/$NEW_USER
+    #arch-chroot $MOUNT_POINT chown -R $NEW_USER /home/$NEW_USER/selinux-master
+    #arch-chroot $MOUNT_POINT su $NEW_USER /home/$NEW_USER/selinux-master/recv_gpg_keys.sh
+    #arch-chroot $MOUNT_POINT pacman -S --noconfirm 
+    #arch-chroot $MOUNT_POINT su $NEW_USER /home/$NEW_USER/selinux-master/build.sh
     sed 's/GRUB_CMDLINE_LINUX_DEFAULT="/GRUB_CMDLINE_LINUX_DEFAULT="security=selinux selinux=1 /g' $MOUNT_POINT/boot/grub/grub.cfg > $MOUNT_POINT/boot/grub/grub.cfg.new
     cp $MOUNT_POINT/boot/grub/grub.cfg $MOUNT_POINT/boot/grub/grub.cfg
     rm $MOUNT_POINT/boot/grub/grub.cfg.new
@@ -663,13 +664,12 @@ cp -R ./etc $MOUNT_POINT/
 # Set root password
 echo -n "Set root password:"
 read -s $ROOT_PASSWORD
-arch-chroot $MOUNT_POINT echo root:$ROOT_PASSWORD | chpasswd
+#arch-chroot $MOUNT_POINT echo root:$ROOT_PASSWORD | chpasswd
 arch-chroot $MOUNT_POINT passwd
 
 #add new user
 echo -n "Set $NEW_USER password:"
-read -s $NEW_USER_PASSWORD
-add_new_user $NEW_USER $NEW_USER_PASSWORD
+add_new_user $NEW_USER
 
 #setup bash profile. Need after add new user
 setup_bash_profile
