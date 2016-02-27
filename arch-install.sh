@@ -43,7 +43,7 @@ NEW_USER_PASSWORD=""
 ROOT_PASSWORD=""
 
 #applications list
-SYSTEM="grub net-tools sudo ntfs-3g ntfsprogs dosfstools f2fs-tools hfsprogs jfsutils e2fsprogs nilfs-utils reiserfsprogs xfsprogs alsi dmidecode hwdetect screenfetch "
+SYSTEM="grub net-tools sudo ntfs-3g ntfsprogs dosfstools f2fs-tools hfsprogs jfsutils e2fsprogs nilfs-utils reiserfsprogs xfsprogs dmidecode hwdetect screenfetch "
 ACCESSORIES="mc curl rsync gpm unzip cpio arj atool lha lrzip lz4 lzop p7zip pixz jre8-openjdk java-openjfx"
 GUI=""
 OFFICE=""
