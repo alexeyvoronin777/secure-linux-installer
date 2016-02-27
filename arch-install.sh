@@ -61,7 +61,7 @@ DEVELOPMENT="$DEVELOPMENT eclipse-cpp monodevelop qt5"
 OFFICE="$OFFICE libreoffice"
 WEB="$WEB firefox pidgin skype flashplayer transmission-cli transmission-gtk claws-mail"
 MEDIA="$MEDIA vlc ffmpeg mplayer gimp blender pavucontrol"
-SECURITY="$SECURITY wiresahrd-cli wiresahrd-gtk"
+SECURITY="$SECURITY wireshark-cli wireshark-gtk"
 fi
 
 if [[ $CONSOLE == 1 ]]; then
