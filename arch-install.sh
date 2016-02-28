@@ -175,9 +175,7 @@ setup_selinux(){
     #arch-chroot $MOUNT_POINT su $NEW_USER /home/$NEW_USER/selinux-master/recv_gpg_keys.sh
     #arch-chroot $MOUNT_POINT pacman -S --noconfirm 
     #arch-chroot $MOUNT_POINT su $NEW_USER /home/$NEW_USER/selinux-master/build.sh
-    sed 's/GRUB_CMDLINE_LINUX_DEFAULT="/GRUB_CMDLINE_LINUX_DEFAULT="security=selinux selinux=1 /g' $MOUNT_POINT/etc/default/grub > $MOUNT_POINT/etc/default/grub.new
-    cp $MOUNT_POINT/etc/default/grub.new $MOUNT_POINT/etc/default/grub
-    rm $MOUNT_POINT/etc/default/grub.new
+    sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT="/GRUB_CMDLINE_LINUX_DEFAULT="security=selinux selinux=1 /g' $MOUNT_POINT/etc/default/grub
     arch-chroot $MOUNT_POINT grub-mkconfig -o /boot/grub/grub.cfg
     arch-chroot $MOUNT_POINT grub-install $VOLUME
     mkdir $MOUNT_POINT/selinux
