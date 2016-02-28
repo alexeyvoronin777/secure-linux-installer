@@ -75,9 +75,9 @@ SECURITY="$SECURITY nmap tcpdump"
 fi
 
 APPLICATIONS="$SYSTEM $ACCESSORIES $GUI $OFFICE $DEVELOPMENT $WEB $MEDIA $SECURITY"
-SELINUX_APPLICATIONS="linux-selinux systemd-selinux dbus-selinux openssh-selinux \
-cronie-selinux libselinux libsemanage iproute2-selinux findutils-selinux shadow-selinux\
-psmisc-selinux logrotate-selinux pam-selinux pambase-selinux \
+SELINUX_APPLICATIONS="linux-selinux systemd-selinux openssh-selinux \
+cronie-selinux libselinux libsemanage findutils-selinux shadow-selinux\
+psmisc-selinux pam-selinux pambase-selinux \
 coreutils-selinux util-linux-selinux sudo-selinux"
 
 ########################################
