@@ -166,6 +166,7 @@ setup_selinux(){
     echo "Server = http://siosm.fr/repo/\$repo/" >> $MOUNT_POINT/etc/pacman.conf
     echo "" >> $MOUNT_POINT/etc/pacman.conf    
     arch-chroot $MOUNT_POINT pacman-key --recv-keys C8D83B6AE4B8685A7290545FDB27818F78688F83
+    arch-chroot $MOUNT_POINT pacman-key --lsign-key C8D83B6AE4B8685A7290545FDB27818F78688F83
     arch-chroot $MOUNT_POINT pacman -Syu --noconfirm
     arch-chroot $MOUNT_POINT pacman -S $SELINUX_APPLICATIONS --noconfirm
     #arch-chroot $MOUNT_POINT wget https://github.com/archlinuxhardened/selinux/archive/master.zip -O /home/$NEW_USER/master.zip
