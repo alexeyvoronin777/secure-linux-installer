@@ -224,24 +224,6 @@ up_protection_password(){
 }
 
 ########################################
-# Install aide auditing tool
-# Globals:
-#   MOUNT_POINT
-# Arguments:
-#       None
-# Returns:
-#       None
-########################################
-install_aide(){
-   echo "Install aide auditing tool..."
-   arch-chroot $MOUNT_POINT pacman -S aide --noconfirm
-   echo "First init aide database..."
-   arch-chroot $MOUNT_POINT aide --init
-   mv $MOUNT_POINT/var/lib/aide/aide.db.new.gz $MOUNT_POINT/var/lib/aide/aide.db.gz
-   echo "Done."
-}
-
-########################################
 # Netowork configuration
 # Arguments:
 #       None
@@ -683,8 +665,6 @@ setup_selinux
 #setup auditd
 setup_auditd
 
-#init aide audite tool
-#install_aide
 
 swapoff -a
 umount -R $MOUNT_POINT
